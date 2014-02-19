@@ -10,7 +10,6 @@
 #include <assert.h>
 #include <string.h>
 #include "db_ext.hpp"
-#include "bdb/read.hpp"
 
 using std::cout;
 using std::cerr;
@@ -25,11 +24,6 @@ using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 using std::basic_string;
 
-enum type {
-    TEXT = 0,
-    INT
-};
-
 bool MyDb::execute(const string& sql, const char *context) {
     char *zErrMsg = nullptr;
     int rc = sqlite3_exec(pdb, sql.c_str(), NULL, 0, &zErrMsg);
@@ -42,7 +36,8 @@ bool MyDb::execute(const string& sql, const char *context) {
 }
 
 bool MyDb::init_table() {
-    string sql = "CREATE TABLE packages IF NOT EXISTS ("  \
+    // TODO IF NOT EXIST
+    string sql = "CREATE TABLE packages ("  \
         "id   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
         "name TEXT NOT NULL," \
         "type INT NOT NULL);" \
@@ -53,7 +48,7 @@ bool MyDb::init_table() {
 
 bool MyDb::insert_record(const string& name, int type) {
     stringstream sql;
-    sql << "INSERT OR IGNORE INTO PACKAGES (ID, NAME, TYPE) VALUES (NULL, '";
+    sql << "INSERT OR IGNORE INTO packages (id, name, type) VALUES (NULL, '";
     sql << name << "', " << type << ");";
     return execute(sql.str(), "insert_record");
 }
@@ -99,7 +94,7 @@ void MyDb::iter_one_column(const string& query, int column,
     }
 }
 
-bool MyDb::get_field(int type, const string& name, const string& column,
+bool MyDb::get_field(pkg_type type, const string& name, const string& column,
     string& value) {
     if (!init())
         return false;
@@ -115,7 +110,7 @@ bool MyDb::get_field(int type, const string& name, const string& column,
     return found;
 }
 
-bool MyDb::get_field(int type, const string& name, const string& column,
+bool MyDb::get_field(pkg_type type, const string& name, const string& column,
     int& value) {
     string val;
     bool ret = get_field(type, name, column, val);
@@ -132,25 +127,22 @@ bool MyDb::update_value(int type, const string& name, const string& column,
     if (!init())
         return false;
     add_column(column, true);
-    stringstream sql("UPDATE OR ");
-    if (override)
-        sql << "REPLACE";
-    else
-        sql << "IGNORE";
-    sql << "packages SET '" << column << "' = '";
+    stringstream sql;
+    // TODO handle override
+    sql << "UPDATE packages SET " << column << " = '";
     fnc(sql);
     sql << "' WHERE name = '" << name << "' AND type = " << type << ";";
     return execute(sql.str(), "update_value");
 }
 
-bool MyDb::set_field(int type, const string& name, const string& column,
+bool MyDb::set_field(pkg_type type, const string& name, const string& column,
     const string& value, bool override) {
     return update_value(type, name, column, override, [&](stringstream& sql) {
         sql << "'" << value << "'";
     });
 }
 
-bool MyDb::set_field(int type, const string& name, const string& column,
+bool MyDb::set_field(pkg_type type, const string& name, const string& column,
     int value, bool override) {
     return update_value(type, name, column, override, [&](stringstream& sql) {
         sql << value;
@@ -167,54 +159,15 @@ bool MyDb::add_column(const string& column, bool text) {
     return execute(sql.str(), "");
 }
 
-
-void insert_records(MyDb& db, BDB& bdb) {
-    // bdb.iter_keys([&](Dbt& key, Dbt& data) {
-    //     string str((char *) key.get_data(), key.get_size());
-    //     db.insert_record(str, 0);
-    //     return false;
-    // });
-}
-
-void time_for_200_samples(MyDb& db, BDB& bdb) {
-
-    vector<string*>* samples = bdb.get_200_samples();
-
-    auto t0 = high_resolution_clock::now();
-
-    string value;
-    for (string* str: *samples) {
-        db.get_field(0, *str, "name", value);
-    }
-
-    auto t1 = high_resolution_clock::now();
-    milliseconds total_ms = std::chrono::duration_cast<milliseconds>(t1 - t0);
-    cout << "duration = " << total_ms.count() << "\n";
-    // memory leak!
-}
-
-
-void list_columns(MyDb& db) {
-    // for (column& c: db.get_columns()) {
-    //     cout << c.name << ",\t\t" << "type: ";
-    //     if (c.text == true)
-    //         cout << "TEXT\n";
-    //     else
-    //         cout << "INT\n";
-    // }
-}
-
 int main(int argc, const char *argv[]) {
     MyDb db("test.db", 0);
-    // BDB bdb("Name");
-    // insert_records(db, bdb);
-    // time_for_200_samples(db, bdb);
-    // if (argc == 2) {
-    //     if (strcmp(argv[1], (char *) "list") == 0)
-    //         list_columns(db);
-    //     return EXIT_SUCCESS;
-    // }
-    // db.add_column("new_text_column", true);
-    // db.add_column("new_int_column", false);
+    const string pkg_name("N:E-V-R.A");
+    const string column1("new_text_column");
+    const string column2("new_int_column");
+    const string val1("val");
+    const int val2 = 44;
+
+    db.set_field(RPM_PKG, pkg_name, column1, val1, true);
+    db.set_field(RPM_PKG, pkg_name, column2, val2, false);
     cout << "works";
 }

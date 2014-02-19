@@ -7,9 +7,18 @@ using std::function;
 using std::stringstream;
 using std::vector;
 
+enum column_type {
+    TEXT = 0,
+    INT
+};
+
 struct column {
     string name;
-    int type;
+    column_type type;
+};
+
+enum pkg_type {
+    RPM_PKG = 0,
 };
 
 class MyDb {
@@ -29,13 +38,13 @@ public:
     bool init();
     MyDb(const string path, int init_flags);
     ~MyDb();
-    bool get_field(int type, const string& name, const string& column,
+    bool get_field(pkg_type type, const string& name, const string& column,
         string& value);
-    bool get_field(int type, const string& name, const string& column,
+    bool get_field(pkg_type type, const string& name, const string& column,
         int& value);
-    bool set_field(int type, const string& name, const string& column,
+    bool set_field(pkg_type type, const string& name, const string& column,
         const string& value, bool override);
-    bool set_field(int type, const string& name, const string& column,
+    bool set_field(pkg_type type, const string& name, const string& column,
         int value, bool override);
     // TODO
     vector<column> get_columns();
