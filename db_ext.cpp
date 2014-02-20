@@ -24,7 +24,7 @@ using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 using std::basic_string;
 
-bool MyDb::execute(const string& sql, const char *context) {
+bool Swdb::execute(const string& sql, const char *context) {
     char *zErrMsg = nullptr;
     int rc = sqlite3_exec(pdb, sql.c_str(), NULL, 0, &zErrMsg);
     if (rc == SQLITE_OK)
@@ -35,7 +35,7 @@ bool MyDb::execute(const string& sql, const char *context) {
     return false;
 }
 
-bool MyDb::init_table() {
+bool Swdb::init_table() {
     // TODO IF NOT EXIST
     string sql = "CREATE TABLE packages ("  \
         "id   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \
@@ -46,14 +46,14 @@ bool MyDb::init_table() {
     return execute(sql, "init_table");
 }
 
-bool MyDb::insert_record(const string& name, int type) {
+bool Swdb::insert_record(const string& name, int type) {
     stringstream sql;
     sql << "INSERT OR IGNORE INTO packages (id, name, type) VALUES (NULL, '";
     sql << name << "', " << type << ");";
     return execute(sql.str(), "insert_record");
 }
 
-bool MyDb::init() {
+bool Swdb::init() {
     if (initialized)
         return true;
     if (sqlite3_open(path, &pdb)) {
@@ -66,14 +66,14 @@ bool MyDb::init() {
     return ret;
 }
 
-MyDb::~MyDb() {
+Swdb::~Swdb() {
     sqlite3_close(pdb);
 }
 
-MyDb::MyDb(const string path, int init_flags=0) : pdb(nullptr),
+Swdb::Swdb(const string path, int init_flags=0) : pdb(nullptr),
     initialized(false) {}
 
-void MyDb::iter_one_column(const string& query, int column,
+void Swdb::iter_one_column(const string& query, int column,
     function<bool(string& value)>fnc) {
     sqlite3_stmt *statement;
 
@@ -94,7 +94,7 @@ void MyDb::iter_one_column(const string& query, int column,
     }
 }
 
-bool MyDb::get_field(pkg_type type, const string& name, const string& column,
+bool Swdb::get_field(pkg_type type, const string& name, const string& column,
     string& value) {
     if (!init())
         return false;
@@ -110,7 +110,7 @@ bool MyDb::get_field(pkg_type type, const string& name, const string& column,
     return found;
 }
 
-bool MyDb::get_field(pkg_type type, const string& name, const string& column,
+bool Swdb::get_field(pkg_type type, const string& name, const string& column,
     int& value) {
     string val;
     bool ret = get_field(type, name, column, val);
@@ -122,7 +122,7 @@ bool MyDb::get_field(pkg_type type, const string& name, const string& column,
     return ret;
 }
 
-bool MyDb::update_value(int type, const string& name, const string& column,
+bool Swdb::update_value(int type, const string& name, const string& column,
     bool override, function<void(stringstream&)> fnc) {
     if (!init())
         return false;
@@ -135,21 +135,21 @@ bool MyDb::update_value(int type, const string& name, const string& column,
     return execute(sql.str(), "update_value");
 }
 
-bool MyDb::set_field(pkg_type type, const string& name, const string& column,
+bool Swdb::set_field(pkg_type type, const string& name, const string& column,
     const string& value, bool override) {
     return update_value(type, name, column, override, [&](stringstream& sql) {
         sql << "'" << value << "'";
     });
 }
 
-bool MyDb::set_field(pkg_type type, const string& name, const string& column,
+bool Swdb::set_field(pkg_type type, const string& name, const string& column,
     int value, bool override) {
     return update_value(type, name, column, override, [&](stringstream& sql) {
         sql << value;
     });
 }
 
-bool MyDb::add_column(const string& column, bool text) {
+bool Swdb::add_column(const string& column, bool text) {
     stringstream sql;
     sql << "ALTER TABLE packages ADD COLUMN " << column;
     if (text)
@@ -160,7 +160,7 @@ bool MyDb::add_column(const string& column, bool text) {
 }
 
 int main(int argc, const char *argv[]) {
-    MyDb db("test.db", 0);
+    Swdb db("test.db", 0);
     const string pkg_name("N:E-V-R.A");
     const string column1("new_text_column");
     const string column2("new_int_column");

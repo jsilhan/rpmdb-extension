@@ -21,7 +21,7 @@ enum pkg_type {
     RPM_PKG = 0,
 };
 
-class MyDb {
+class Swdb {
 private:
     const char * path = "test.db";
     sqlite3 *pdb;
@@ -36,8 +36,8 @@ private:
     bool insert_record(const string& name, int type);
 public:
     bool init();
-    MyDb(const string path, int init_flags);
-    ~MyDb();
+    Swdb(const string path, int init_flags);
+    ~Swdb();
     bool get_field(pkg_type type, const string& name, const string& column,
         string& value);
     bool get_field(pkg_type type, const string& name, const string& column,
