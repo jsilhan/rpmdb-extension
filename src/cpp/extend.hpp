@@ -48,8 +48,6 @@ public:
         int value, bool override);
     // TODO
     vector<column> get_columns();
-    void query(const string& sql_str, const vector<string>& variables,
-        function<bool(sqlite3_stmt *statement)>);
     bool create_index(const string& column);
 };
 
