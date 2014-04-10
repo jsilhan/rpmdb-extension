@@ -1,7 +1,4 @@
-# http://github.com/jsilhan/dnf/compare/[<START>...]yumhistory
-
 RPM_PKGS = range(1) # pkg_type
-
 
 class Swdb:
 
@@ -70,8 +67,7 @@ class HistoryQuery:
 
     def __getitem__(self, index):
         """
-        returns 
-        """
+        slicing is used instead of limitby"""
         if isinstance(index, int):
             pass
         elif isinstance(index, slice):

@@ -6,7 +6,9 @@
 #include <string>
 #include <assert.h>
 #include <string.h>
-#include "db_ext.hpp"
+#include "table.hpp"
+#include "query.hpp"
+#include "utils.hpp"
 
 using std::cout;
 using std::cerr;
@@ -19,93 +21,80 @@ using std::move;
 using std::vector;
 
 
-enum cardinality {
-    ONE_TO_ONE;
-    ONE_TO_MANY;
-    MANY_TO_ONE;
-};
-
-enum pkg_type {
-    RPM_PKG;
-};
-
-enum field_type {
-    INT;
-    STRING;
-};
-
-int comparator_mask = 0x0f
-enum comparator_flags {
-    EQ = 0;
-    NEQ = 1;
-    GT = 2;
-    GTE = 3;
-    LTE = 4;
-    LT = 5;
-};
-
-enum value_flag {
-    ICASE = 1 << 0;
+void Query::filter(string path, string value, int value_flags) {
+    uFieldFilter filter(new FieldFilter);
+    assert(!path.empty());
+    filter->value_flags = value_flags;
+    filter->value = value;
+    split(filter->path, '.', path);
+    filters.push_back(f);
 }
 
-struct FieldFilter {
-    vector<string> field_path;
-    string value;
-    int value_flags;
-};
+void add_where_clauses(uFieldFilter& filter, stringstream& sql) {
+    string& table_name;
+    if (filter.path.size() == 1)
+        table_name = relative_to.name;
+    else
+        table_name = filter.path.at(filter.path.size() - 2);
+    sql << "WHERE ";
 
-vector<string> &split(const string &s, char delim, vector<string> &elems) {
-    stringstream ss(s);
-    string item;
-    while (getline(ss, item, delim)) {
-        elems.push_back(item);
+    vector<ustringstream> vect_stream;
+    for (uFieldFilter& filter : filters) {
+        ustringstream tmp_stream(new stringstream);
+        tmp_stream << table_name << "." << filter.path.last() << " = '" << filter.value << "'";
+        // TODO consider flags
+        vect_stream.push_back(tmp_stream);
     }
-    return elems;
+    append_joined(sql, vect_stream, ", ");
 }
 
-struct Query {
-    vector<FieldFilter> filter;
-    Table relative_to;
-    string to_select_sql();
-    void filter(string path, string value, int value_flags);
-};
-
-struct Fields {
-    string name;
-    field_type type;
-    string app_name;
-    string description;
-};
-
-void Table::connect(Table other, cardinality c) {
-
+bool Query::add_join_clause(string& t1_name, string& t2_name, stringstream& sql) {
+    table_relation tr;
+    if (!db.connections.get_relation(t1_name, t2_name, tr))
+        return false;
+    sql << "JOIN " << t2_name << " ON " << tr.t1_column << " = " << tr.t2_column << "\n";
+    return true;
 }
 
-struct Table {
-    string name;
-    vector<Fields> reserved_fields;
-    vector<Fields> fields_from_db;
-    unordered_map<string,Table> connections;
-    string to_init_sql();
-};
+void Query::add_join_clauses(vector<string>& path, stringstream& sql) {
+    auto first = s.rbegin() + 1;
+    auto second = s.rbegin() + 2;
 
-struct Record {
-    Table from_table;
-    unordered_map<string,string> values_from_db;
-    unordered_map<string,string> values_to_insert;
-    bool is_in_db() {};
-    bool is_changed() {};
-    void set(string key, string value) {};
-    void get(string key) {};
-    void save() {};
-};
+    while (1) {
+        if (second == s.rend()) {
+            if (!add_join_clause(relative_to.name, *first, sql))
+                return false;
+            break;
+        }
+        if (!add_join_clause(*second, *first, sql))
+            return false;
+        first++;
+        second++;
+    }
+}
 
-struct Swdb {
-    vector<Table> tables;
-    // parameters
-    vector<Package> actors;
-    string path;
-    pkg_type default_pkg_type
-};
+void Query::add_select_clause(stringstream& sql) {
+    sql << "SELECT ";
+    int num_columns = relative_to.fields_from_db.size();
+    int i = 0;
+    for (auto kv : relative_to.fields_from_db) {
+        i++;
+        sql << relative_to.name << "." << kv.first;
+        if (i != num_columns)
+            sql << ", "
+    }
+    sql << " FROM " << relative_to << ";";
+}
 
-
+string Query::to_select_sql() {
+    stringstream sql;
+    add_select_clause(sql);
+    for (uFieldFilter& filter : filters) {
+        add_join_clauses(filter->path, sql);
+    }
+    for (uFieldFilter& filter : filters) {
+        add_where_clauses(filter, sql);
+    }
+    sql << ";";
+    return sql.str();
+}
