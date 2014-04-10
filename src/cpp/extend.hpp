@@ -1,3 +1,6 @@
+#ifndef EXTEND_H
+#define EXTEND_H
+
 #include <sqlite3.h>
 #include <string>
 #include <functional>
@@ -51,3 +54,4 @@ public:
     bool create_index(const string& column);
 };
 
+#endif

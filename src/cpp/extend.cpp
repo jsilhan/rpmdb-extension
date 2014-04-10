@@ -9,7 +9,7 @@
 #include <sqlite3.h>
 #include <assert.h>
 #include <string.h>
-#include "db_ext.hpp"
+#include "extend.hpp"
 
 using std::cout;
 using std::cerr;

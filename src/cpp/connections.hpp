@@ -1,3 +1,6 @@
+#ifndef CONNECTIONS_H
+#define CONNECTIONS_H
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -6,10 +9,8 @@
 #include <string>
 #include <assert.h>
 #include <string.h>
+#include <unordered_map>
 #include "table.hpp"
-
-#ifndef CONNECTIONS_H
-#define CONNECTIONS_H
 
 using std::cout;
 using std::cerr;
@@ -20,6 +21,7 @@ using std::stringstream;
 using std::unique_ptr;
 using std::move;
 using std::vector;
+using std::unordered_map;
 
 struct table_relation {
     string t1_column;

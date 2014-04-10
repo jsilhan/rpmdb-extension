@@ -21,29 +21,34 @@ using std::move;
 using std::vector;
 
 
-void Query::filter(string path, string value, int value_flags) {
+int comparator_mask = 0x0f;
+
+void Query::filter(const string& path, string value, int value_flags) {
     uFieldFilter filter(new FieldFilter);
     assert(!path.empty());
     filter->value_flags = value_flags;
     filter->value = value;
-    split(filter->path, '.', path);
-    filters.push_back(f);
+    split(path, '.', filter->path);
+    filters.push_back(move(filter));
 }
 
-void add_where_clauses(uFieldFilter& filter, stringstream& sql) {
-    string& table_name;
-    if (filter.path.size() == 1)
-        table_name = relative_to.name;
-    else
-        table_name = filter.path.at(filter.path.size() - 2);
+string& Query::get_last_table_name(uFieldFilter& filter) {
+    if (filter->path.size() == 1)
+        return relative_to.name;
+    int before_last = filter->path.size() - 2;
+    return *(filter->path.at(before_last));
+}
+
+void Query::add_where_clauses(uFieldFilter& filter, stringstream& sql) {
+    string& table_name = get_last_table_name(filter);
     sql << "WHERE ";
 
     vector<ustringstream> vect_stream;
     for (uFieldFilter& filter : filters) {
         ustringstream tmp_stream(new stringstream);
-        tmp_stream << table_name << "." << filter.path.last() << " = '" << filter.value << "'";
+        *tmp_stream << table_name << "." << *filter->path.at(filter->path.size() - 1) << " = '" << filter->value << "'";
         // TODO consider flags
-        vect_stream.push_back(tmp_stream);
+        vect_stream.push_back(move(tmp_stream));
     }
     append_joined(sql, vect_stream, ", ");
 }
@@ -56,34 +61,36 @@ bool Query::add_join_clause(string& t1_name, string& t2_name, stringstream& sql)
     return true;
 }
 
-void Query::add_join_clauses(vector<string>& path, stringstream& sql) {
-    auto first = s.rbegin() + 1;
-    auto second = s.rbegin() + 2;
+bool Query::add_join_clauses(vector<ustring>& path, stringstream& sql) {
+    auto first = path.rbegin() + 1;
+    auto second = path.rbegin() + 2;
 
     while (1) {
-        if (second == s.rend()) {
-            if (!add_join_clause(relative_to.name, *first, sql))
+        if (second == path.rend()) {
+            if (!add_join_clause(relative_to.name, **first, sql))
                 return false;
             break;
         }
-        if (!add_join_clause(*second, *first, sql))
+        if (!add_join_clause(**second, **first, sql))
             return false;
         first++;
         second++;
     }
+    return true;
 }
 
 void Query::add_select_clause(stringstream& sql) {
     sql << "SELECT ";
-    int num_columns = relative_to.fields_from_db.size();
-    int i = 0;
+    vector<ustringstream> vect_stream;
     for (auto kv : relative_to.fields_from_db) {
-        i++;
-        sql << relative_to.name << "." << kv.first;
-        if (i != num_columns)
-            sql << ", "
+        ustringstream tmp_stream(new stringstream);
+        *tmp_stream << relative_to.name << "." << kv.first;
+        // TODO consider flags
+        vect_stream.push_back(move(tmp_stream));
     }
-    sql << " FROM " << relative_to << ";";
+    append_joined(sql, vect_stream, ", ");
+
+    sql << " FROM " << relative_to.name << ";";
 }
 
 string Query::to_select_sql() {

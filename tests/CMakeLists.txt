@@ -1,7 +1,7 @@
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIR})
 
-file(GLOB swdb_tests ${CMAKE_SOURCE_DIR}/tests/test*.cpp)
+file(GLOB swdb_tests ${CMAKE_CURRENT_SOURCE_DIR}/test*.cpp)
 
 add_executable(test_main ${swdb_tests})
 

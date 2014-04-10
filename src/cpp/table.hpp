@@ -1,15 +1,15 @@
+#ifndef TABLE_H
+#define TABLE_H
+
 #include <string>
 #include <memory>
 #include <vector>
-#include <unordered_map>
-
-#ifndef TABLE_HPP
-#define TABLE_HPP
+#include <map>
 
 using std::string;
 using std::vector;
 using std::unique_ptr;
-using std::unordered_map;
+using std::map;
 
 enum cardinality {
     ONE_TO_ONE,
@@ -37,11 +37,11 @@ class Table {
 public:
     string name;
     vector<ReservedField> reserved_fields;
-    unordered_map<string,field_type> fields_from_db;
+    map<string,field_type> fields_from_db;
     Table(string& name);
     Table(const char* name);
     void add_field(string name, field_type type);
-    bool field_valid(string& name, field_type type);
+    bool field_valid(const string& name, field_type type);
     string to_init_sql();
 };
 

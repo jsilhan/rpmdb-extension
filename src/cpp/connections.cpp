@@ -27,15 +27,15 @@ bool Connections::fill_tr(string& t1_name, string& t2_name, table_relation& tr) 
     return true;
 }
 
-void Connection::connect_tables(Table& t1, Table& t2, cardinality c) {
+void Connections::connect_tables(Table& t1, Table& t2, cardinality c) {
     if (c == ONE_TO_MANY)
-        table_relation[t1.name] = t2.name;
+        table_relations[t1.name] = t2.name;
     else
-        table_relation[t2.name] = t1.name;
+        table_relations[t2.name] = t1.name;
 }
 
 bool Connections::get_relation(string& t1_name, string& t2_name, table_relation &tr) {
-    if (fill_tr(t1_name, t2_name, tr) || fill_tr(t2_name, t1_name))
+    if (fill_tr(t1_name, t2_name, tr) || fill_tr(t2_name, t1_name, tr))
         return true;
     return false;
 }

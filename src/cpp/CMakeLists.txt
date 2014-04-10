@@ -6,9 +6,7 @@
 #     TARGET_LINK_LIBRARIES(db_ext ${SQLITE3_LIBRARIES})
 # ENDIF (SQLITE3_FOUND)
 
-
-SET (swdb_srcs
-     zk_test.cpp)
+file(GLOB swdb_srcs ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 ADD_LIBRARY(libswdb SHARED ${swdb_srcs})
 # TARGET_LINK_LIBRARIES(libswdb ${SOLV_LIBRARY} ${SOLVEXT_LIBRARY})

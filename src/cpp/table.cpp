@@ -26,7 +26,7 @@ using std::unordered_map;
 using std::map;
 using std::get;
 
-bool Table::field_valid(string& name, field_type type) {
+bool Table::field_valid(const string& name, field_type type) {
     // contains non alpha characters
     // starts with '_'
     // key in internally used names (e.g. 'id')
@@ -49,12 +49,12 @@ string Table::to_init_sql() {
     vector<ustringstream> vect_stream;
     for (auto kv : fields_from_db) {
         ustringstream tmp_stream(new stringstream);
-        tmp_stream << kv.first() << " ";
-        if (kv.second() == INT)
-            tmp_stream << "INT";
+        *tmp_stream << kv.first << " ";
+        if (kv.second == INT)
+            *tmp_stream << "INT";
         else
-            tmp_stream << "STRING";
-        vect_stream.push_back(tmp_stream);
+            *tmp_stream << "STRING";
+        vect_stream.push_back(move(tmp_stream));
     }
     append_joined(sql, vect_stream, ", ");
     sql << ");";

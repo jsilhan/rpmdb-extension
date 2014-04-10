@@ -1,3 +1,6 @@
+#ifndef QUERY_H
+#define QUERY_H
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -8,9 +11,6 @@
 #include <string.h>
 #include "table.hpp"
 #include "swdb.hpp"
-
-#ifndef QUERY_H
-#define QUERY_H
 
 using std::cout;
 using std::cerr;
@@ -24,7 +24,7 @@ using std::vector;
 
 typedef unique_ptr<string> ustring;
 
-int comparator_mask = 0x0f;
+extern int comparator_mask;
 enum comparator_flags {
     EQ = 0,
     NEQ = 1,
@@ -39,7 +39,7 @@ enum value_flag {
 };
 
 struct FieldFilter {
-    string path;
+    vector<ustring> path;
     string value;
     int value_flags;
 };
@@ -51,11 +51,16 @@ private:
     Swdb& db;
     Table& relative_to;
     vector<uFieldFilter> filters;
+    void add_select_clause(stringstream& sql);
+    bool add_join_clauses(vector<ustring>& path, stringstream& sql);
+    bool add_join_clause(string& t1_name, string& t2_name, stringstream& sql);
+    void add_where_clauses(uFieldFilter& filter, stringstream& sql);
+    string& get_last_table_name(uFieldFilter& filter);
 public:
     Query(Swdb& db, Table& t) : db(db), relative_to(t) {};
-    Query(Swdb& db, string& n) : db(db), relative_to(db.tables[n]) {};
+    // Query(Swdb& db, string& n) : db(db), relative_to(db.tables[n]) {};
     string to_select_sql();
-    void filter(string path, string value, int value_flags);
+    void filter(const string& path, string value, int value_flags);
 };
 
 #endif

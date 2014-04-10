@@ -21,15 +21,17 @@ using std::vector;
 
 typedef unique_ptr<stringstream> ustringstream;
 
-void split(const string& s, char delim, vector<string>& elems) {
+void split(const string& s, char delim, vector<ustring>& elems) {
     stringstream ss(s);
-    string item;
-    while (getline(ss, item, delim)) {
-        elems.push_back(item);
+    while (1) {
+        ustring item(new string);
+        if (!getline(ss, *item, delim))
+            break;
+        elems.push_back(move(item));
     }
 }
 
-void append_joined(stringstream target, const vector<ustringstream>& v, const string& token) {
+void append_joined(stringstream& target, const vector<ustringstream>& v, const string& token) {
   for (auto i = v.begin(); i != v.end(); i++){
     if (i != v.begin())
         target << token;

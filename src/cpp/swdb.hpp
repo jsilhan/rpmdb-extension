@@ -1,3 +1,6 @@
+#ifndef SWDB_H
+#define SWDB_H
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -8,9 +11,6 @@
 #include <string.h>
 #include "table.hpp"
 #include "connections.hpp"
-
-#ifndef SWDB_HPP
-#define SWDB_HPP
 
 using std::cout;
 using std::cerr;
