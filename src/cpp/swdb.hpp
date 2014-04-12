@@ -25,7 +25,7 @@ using std::vector;
 
 class Swdb {
 public:
-    unordered_map<string,Table> tables;
+    unordered_map<string,uTable> tables;
     Connections connections;
     // parameters
     // vector<Package> actors;

@@ -8,22 +8,18 @@ const string SELECT_SCRIPT = "SELECT t1.t1f1 t1.t1f2 t1.t1f3 FROM t1"
     "WHERE t2.val = 'val';";
 
 TEST(QueryTest, SelectSqlScript) {
-    Table t("t1");
-    t.add_field("t1f1", STRING);
-    t.add_field("t1f2", INT);
-    t.add_field("t1f3", STRING);
-    Table t2("t2");
-    t2.add_field("t2f1", STRING);
-    t2.add_field("t2f2", INT);
+    uTable t(new Table("t1"));
+    t->add_field("t1f1", STRING);
+    t->add_field("t1f2", INT);
+    t->add_field("t1f3", STRING);
+    uTable t2(new Table("t2"));
+    t2->add_field("t2f1", STRING);
+    t2->add_field("t2f2", INT);
     Swdb db;
-    db.tables[t.name] = t;
-    db.tables[t2.name] = t2;
-    Query q(db, t);
+    db.tables[t->name] = move(t);
+    db.tables[t2->name] = move(t2);
+    db.connections.connect_tables(*t, *t2, ONE_TO_MANY);
+    Query q(db, *t);
     q.filter("t2.t2f1", "val", 0);
     ASSERT_EQ(q.to_select_sql(), SELECT_SCRIPT);
-}
-
-int main(int argc, char **argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }

@@ -159,15 +159,15 @@ bool Swdb::add_column(const string& column, bool text) {
     return execute(sql.str(), "");
 }
 
-int main(int argc, const char *argv[]) {
-    Swdb db("test.db", 0);
-    const string pkg_name("N:E-V-R.A");
-    const string column1("new_text_column");
-    const string column2("new_int_column");
-    const string val1("val");
-    const int val2 = 44;
+// int main(int argc, const char *argv[]) {
+//     Swdb db("test.db", 0);
+//     const string pkg_name("N:E-V-R.A");
+//     const string column1("new_text_column");
+//     const string column2("new_int_column");
+//     const string val1("val");
+//     const int val2 = 44;
 
-    db.set_field(RPM_PKG, pkg_name, column1, val1, true);
-    db.set_field(RPM_PKG, pkg_name, column2, val2, false);
-    cout << "works";
-}
+//     db.set_field(RPM_PKG, pkg_name, column1, val1, true);
+//     db.set_field(RPM_PKG, pkg_name, column2, val2, false);
+//     cout << "works";
+// }

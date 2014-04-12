@@ -20,7 +20,10 @@ using std::move;
 using std::vector;
 
 bool Connections::fill_tr(string& t1_name, string& t2_name, table_relation& tr) {
-    if (table_relations.find(t1_name) == table_relations.end())
+    auto found = table_relations.find(t1_name);
+    if (found == table_relations.end())
+        return false;
+    if (found->second != t2_name)
         return false;
     tr.t1_column = t1_name + ".id";
     tr.t2_column = t2_name + "._" + t1_name;

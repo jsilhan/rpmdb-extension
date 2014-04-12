@@ -12,8 +12,3 @@ TEST(TableTest, InitSqlScript) {
     t.add_field("f3", STRING);
     ASSERT_EQ(t.to_init_sql(), INIT_SCRIPT);
 }
-
-int main(int argc, char **argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

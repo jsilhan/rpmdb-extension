@@ -11,6 +11,7 @@ using std::vector;
 using std::unique_ptr;
 using std::map;
 
+
 enum cardinality {
     ONE_TO_ONE,
     ONE_TO_MANY,
@@ -33,10 +34,12 @@ struct ReservedField {
     string description;
 };
 
+typedef unique_ptr<ReservedField> uReservedField;
+
 class Table {
 public:
     string name;
-    vector<ReservedField> reserved_fields;
+    vector<uReservedField> reserved_fields;
     map<string,field_type> fields_from_db;
     Table(string& name);
     Table(const char* name);
@@ -45,4 +48,5 @@ public:
     string to_init_sql();
 };
 
+typedef unique_ptr<Table> uTable;
 #endif
