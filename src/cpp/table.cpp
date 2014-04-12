@@ -46,17 +46,17 @@ string Table::to_init_sql() {
     sql << "CREATE TABLE " << name << " (";
     sql << "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,";
 
-    vector<ustringstream> vect_stream;
-    for (auto kv : fields_from_db) {
-        ustringstream tmp_stream(new stringstream);
-        *tmp_stream << kv.first << " ";
-        if (kv.second == INT)
-            *tmp_stream << "INT";
+    for (auto i = fields_from_db.begin(); i != fields_from_db.end(); i++) {
+        if (i != fields_from_db.begin())
+            sql << ", ";
+
+        sql << i->first << " ";
+        if (i->second == INT)
+            sql << "INT";
         else
-            *tmp_stream << "STRING";
-        vect_stream.push_back(move(tmp_stream));
+            sql << "STRING";
     }
-    append_joined(sql, vect_stream, ", ");
+
     sql << ");";
     return sql.str();
 }

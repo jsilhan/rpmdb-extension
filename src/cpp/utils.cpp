@@ -30,11 +30,3 @@ void split(const string& s, char delim, vector<ustring>& elems) {
         elems.push_back(move(item));
     }
 }
-
-void append_joined(stringstream& target, const vector<ustringstream>& v, const string& token) {
-  for (auto i = v.begin(); i != v.end(); i++){
-    if (i != v.begin())
-        target << token;
-    target << **i;
-  }
-}

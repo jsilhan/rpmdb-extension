@@ -43,14 +43,14 @@ void Query::add_where_clauses(uFieldFilter& filter, stringstream& sql) {
     string& table_name = get_last_table_name(filter);
     sql << "WHERE ";
 
-    vector<ustringstream> vect_stream;
-    for (uFieldFilter& filter : filters) {
-        ustringstream tmp_stream(new stringstream);
-        *tmp_stream << table_name << "." << *filter->path.at(filter->path.size() - 1) << " = '" << filter->value << "'";
+    for (auto i = filters.begin(); i != filters.end(); i++) {
+        if (i != filters.begin())
+            sql << ", ";
+        vector<ustring>& path = (*i)->path;
+        sql << table_name << "." << *(path.at(path.size() - 1));
+        sql << " = '" << (*i)->value << "'";
         // TODO consider flags
-        vect_stream.push_back(move(tmp_stream));
     }
-    append_joined(sql, vect_stream, ", ");
 }
 
 bool Query::add_join_clause(string& t1_name, string& t2_name, stringstream& sql) {
@@ -81,14 +81,14 @@ bool Query::add_join_clauses(vector<ustring>& path, stringstream& sql) {
 
 void Query::add_select_clause(stringstream& sql) {
     sql << "SELECT ";
-    vector<ustringstream> vect_stream;
-    for (auto kv : relative_to.fields_from_db) {
-        ustringstream tmp_stream(new stringstream);
-        *tmp_stream << relative_to.name << "." << kv.first;
+    map<string,field_type>& fields = relative_to.fields_from_db;
+
+    for (auto i = fields.begin(); i != fields.end(); i++) {
+        if (i != fields.begin())
+            sql << ", ";
+        sql << relative_to.name << "." << i->first;
         // TODO consider flags
-        vect_stream.push_back(move(tmp_stream));
     }
-    append_joined(sql, vect_stream, ", ");
 
     sql << " FROM " << relative_to.name << ";";
 }
