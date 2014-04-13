@@ -57,7 +57,7 @@ bool Query::add_join_clause(string& t1_name, string& t2_name, stringstream& sql)
     table_relation tr;
     if (!db.connections.get_relation(t1_name, t2_name, tr))
         return false;
-    sql << "JOIN " << t2_name << " ON " << tr.t1_column << " = " << tr.t2_column << "\n";
+    sql << "JOIN " << t2_name << " ON " << tr.t1_column << " = " << tr.t2_column << " ";
     return true;
 }
 
@@ -81,16 +81,16 @@ bool Query::add_join_clauses(vector<ustring>& path, stringstream& sql) {
 
 void Query::add_select_clause(stringstream& sql) {
     sql << "SELECT ";
-    map<string,field_type>& fields = relative_to.fields_from_db;
+    map<string,field_flags>& fields = relative_to.fields_from_db;
 
     for (auto i = fields.begin(); i != fields.end(); i++) {
         if (i != fields.begin())
-            sql << ", ";
+            sql << " ";
         sql << relative_to.name << "." << i->first;
         // TODO consider flags
     }
 
-    sql << " FROM " << relative_to.name << ";";
+    sql << " FROM " << relative_to.name << " ";
 }
 
 string Query::to_select_sql() {

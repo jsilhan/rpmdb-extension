@@ -32,27 +32,34 @@ class Record {
 private:
     int record_id;
     bool changed;
-    bool protect;
     map<string,string> values_from_db;
     unordered_map<string,string> values_to_insert;
     unordered_map<string,uvector<unique_ptr<Record>>> records_to_insert;
     Table& from_table;
     Swdb& db;
 public:
-    Record(Swdb& db, Table& t, int id=-1, bool protect=false) :
-        db(db), from_table(t), record_id(id), protect(protect) {
-            changed = false;
-    };
+    Record(Swdb& db, Table& t, int id=-1) :
+        db(db), from_table(t), record_id(id), changed(false) {};
+    Record(Swdb& db, string& tn, int id=-1) :
+        db(db), from_table(*db.tables[tn]), record_id(id), changed(false) {};
     bool is_in_db();
     bool is_changed();
+    int id() { return record_id; }
     bool set(const string& key, const string& value);
     bool set(const string& key, int value);
     bool set(const string& key, uvector<unique_ptr<Record>> records);
     bool append(const string& key, unique_ptr<Record> record);
     bool get(const string& key, string& value);
     bool get(const string& key, int& value);
-    string to_update_sql();
-    string to_insert_sql();
+    bool set_fk(Record& record);
+    int last_id();
+    void insert_columns(stringstream& sql);
+    void insert_values(stringstream& sql);
+    bool to_insert_sql(stringstream& sql);
+    bool others_to_insert_sql(stringstream& sql);
+    bool self_to_insert_sql(stringstream& sql);
+    bool to_update_sql(stringstream& sql);
+    bool set_fk(const Record& record);
     bool save();
 };
 

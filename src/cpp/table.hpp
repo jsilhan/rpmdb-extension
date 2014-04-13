@@ -22,14 +22,15 @@ enum pkg_type {
     RPM_PKG,
 };
 
-enum field_type {
-    INT,
-    STRING,
+enum field_flags {
+    INT = 1,
+    STRING = 2,
+    REQUIRED = 1 << 8,
 };
 
 struct ReservedField {
     string name;
-    field_type type;
+    field_flags type;
     string app_name;
     string description;
 };
@@ -39,12 +40,14 @@ typedef unique_ptr<ReservedField> uReservedField;
 class Table {
 public:
     string name;
+    bool protect;
+    bool expandable;
     vector<uReservedField> reserved_fields;
-    map<string,field_type> fields_from_db;
-    Table(string& name);
-    Table(const char* name);
-    void add_field(string name, field_type type);
-    bool field_valid(const string& name, field_type type);
+    map<string,field_flags> fields_from_db;
+    Table(string& name, bool protect=false);
+    Table(const char* name, bool protect=false);
+    void add_field(string name, field_flags flags);
+    bool field_valid(const string& name, field_flags type);
     string to_init_sql();
 };
 

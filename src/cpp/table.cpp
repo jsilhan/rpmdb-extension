@@ -26,7 +26,7 @@ using std::unordered_map;
 using std::map;
 using std::get;
 
-bool Table::field_valid(const string& name, field_type type) {
+bool Table::field_valid(const string& name, field_flags type) {
     // contains non alpha characters
     // starts with '_'
     // key in internally used names (e.g. 'id')
@@ -34,12 +34,12 @@ bool Table::field_valid(const string& name, field_type type) {
     return true;
 }
 
-void Table::add_field(string name, field_type type) {
-    fields_from_db[name] = type;
+void Table::add_field(string name, field_flags flags) {
+    fields_from_db[name] = flags;
 }
 
-Table::Table(string& name) : name(name) {};
-Table::Table(const char* name) : name(name) {};
+Table::Table(string& name, bool protect) : name(name), protect(protect) {}
+Table::Table(const char* name, bool protect) : name(name), protect(protect) {}
 
 string Table::to_init_sql() {
     stringstream sql;
@@ -51,7 +51,7 @@ string Table::to_init_sql() {
             sql << ", ";
 
         sql << i->first << " ";
-        if (i->second == INT)
+        if (i->second & INT)
             sql << "INT";
         else
             sql << "STRING";

@@ -77,10 +77,9 @@ bool Record::get(const string& key, string& value) {
     return true;
 };
 
-string Record::to_update_sql() {
+bool Record::to_update_sql(stringstream& sql) {
     if (values_to_insert.empty())
-        return "";
-    stringstream sql;
+        return false;
     sql << "UPDATE " << from_table.name << " SET ";
     int size = values_to_insert.size();
     for (auto kv: values_to_insert) {
@@ -91,5 +90,82 @@ string Record::to_update_sql() {
         }
     }
     sql << " WHERE " << "id='" << record_id << "';";
-    return sql.str();
+    return true;
+}
+
+bool Record::others_to_insert_sql(stringstream& sql) {
+    // for (auto kv : records_to_insert) {
+    //     uvector<uRecord> records = *(kv.second);
+    //     for (uRecord r : records) {
+    //         if (r->is_in_db())
+    //             return false;
+    //         if (!r->set_fk(this) || !r->to_insert_sql(sql))
+    //             return false;
+    //     }
+    // }
+    return true;
+}
+
+bool Record::set_fk(Record& record) {
+    if (!record.is_in_db())
+        return false;
+    // TODO check cardinality
+    values_to_insert["_" + record.from_table.name] = to_string(record.id());
+    return true;
+}
+
+bool Record::to_insert_sql(stringstream& sql) {
+    if (self_to_insert_sql(sql) && others_to_insert_sql(sql))
+        return true;
+    return false;
+}
+
+int Record::last_id() {
+    stringstream sql;
+    sql << "select seq from sqlite_sequence where name='";
+    sql << from_table.name << "';";
+    // TODO execute
+    return 34;
+}
+
+void Record::insert_columns(stringstream& sql) {
+    sql << "(";
+    for (auto i = values_to_insert.begin(); i != values_to_insert.end(); i++) {
+        if (i != values_to_insert.begin())
+            sql << ", ";
+        sql << i->first;
+    }
+    sql << ") ";
+}
+
+void Record::insert_values(stringstream& sql) {
+    sql << "VALUES (";
+    for (auto i = values_to_insert.begin(); i != values_to_insert.end(); i++) {
+        if (i != values_to_insert.begin())
+            sql << ", ";
+        sql << "'" << i->second << "'";
+    }
+    sql << ");";
+}
+
+bool Record::self_to_insert_sql(stringstream& sql) {
+    if (values_to_insert.empty())
+        return false;
+    sql << "INSERT INTO " << from_table.name << " ";
+    insert_columns(sql);
+    insert_values(sql);
+    return true;
+}
+
+bool Record::save() {
+    stringstream sql;
+    // setup savepoint
+    if (is_in_db())
+        if (from_table.protect || !to_update_sql(sql))
+            return false;
+    else if (!to_insert_sql(sql))
+        return false;
+    // if (execute(sql.str()))
+    //     return true;
+    return false;
 }

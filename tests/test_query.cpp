@@ -3,9 +3,9 @@
 #include "../src/cpp/swdb.hpp"
 #include "../src/cpp/table.hpp"
  
-const string SELECT_SCRIPT = "SELECT t1.t1f1 t1.t1f2 t1.t1f3 FROM t1"
-    "JOIN t2 ON t1.id t2._t1"
-    "WHERE t2.val = 'val';";
+const string SELECT_SCRIPT = "SELECT t1.t1f1 t1.t1f2 t1.t1f3 FROM t1 "
+    "JOIN t2 ON t1.id = t2._t1 "
+    "WHERE t2.t2f1 = 'val';";
 
 TEST(QueryTest, SelectSqlScript) {
     string t1_name = "t1";
