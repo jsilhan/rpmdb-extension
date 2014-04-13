@@ -23,7 +23,7 @@ TEST(QueryTest, SelectSqlScript) {
     EXPECT_EQ(db.tables.size(), 2);
     EXPECT_TRUE(db.tables.find("t2") != db.tables.end());
     db.connections.connect_tables(t1_name, t2_name, ONE_TO_MANY);
-    Query q(db, *db.tables[t1_name]);
+    Query q(db, t1_name);
     q.filter("t2.t2f1", "val", EQ);
     EXPECT_EQ(q.to_select_sql(), SELECT_SCRIPT);
 }

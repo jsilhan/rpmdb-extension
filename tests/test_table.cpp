@@ -10,5 +10,7 @@ TEST(TableTest, InitSqlScript) {
     t.add_field("f1", STRING);
     t.add_field("f2", INT);
     t.add_field("f3", STRING);
-    ASSERT_EQ(t.to_init_sql(), INIT_SCRIPT);
+    EXPECT_EQ(t.to_init_sql(), INIT_SCRIPT);
 }
+
+// test expandable fields

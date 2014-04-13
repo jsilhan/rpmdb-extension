@@ -19,8 +19,6 @@ using std::unique_ptr;
 using std::move;
 using std::vector;
 
-typedef unique_ptr<stringstream> ustringstream;
-
 void split(const string& s, char delim, vector<ustring>& elems) {
     stringstream ss(s);
     while (1) {

@@ -11,8 +11,6 @@
 #include <string.h>
 #include "table.hpp"
 #include "connections.hpp"
-// #include "record.hpp"
-// #include "query.hpp"
 
 using std::cout;
 using std::cerr;
@@ -33,8 +31,6 @@ public:
     // vector<Package> actors;
     string path;
     pkg_type default_pkg_type;
-    // uRecord new_record(string& table_name);
-    // uQuery new_query(string& table_name);
 };
 
 #endif

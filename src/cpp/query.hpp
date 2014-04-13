@@ -11,6 +11,7 @@
 #include <string.h>
 #include "table.hpp"
 #include "swdb.hpp"
+#include "utils.hpp"
 
 using std::cout;
 using std::cerr;
@@ -21,8 +22,6 @@ using std::stringstream;
 using std::unique_ptr;
 using std::move;
 using std::vector;
-
-typedef unique_ptr<string> ustring;
 
 extern int comparator_mask;
 enum comparator_flags {
@@ -58,6 +57,7 @@ private:
     string& get_last_table_name(uFieldFilter& filter);
 public:
     Query(Swdb& db, Table& t) : db(db), relative_to(t) {};
+    Query(Swdb& db, string& tn) : db(db), relative_to(*db.tables[tn]) {};
     string to_select_sql();
     void filter(const string& path, string value, int value_flags);
 };
