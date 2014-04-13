@@ -30,11 +30,12 @@ bool Connections::fill_tr(string& t1_name, string& t2_name, table_relation& tr) 
     return true;
 }
 
-void Connections::connect_tables(Table& t1, Table& t2, cardinality c) {
-    if (c == ONE_TO_MANY)
-        table_relations[t1.name] = t2.name;
-    else
-        table_relations[t2.name] = t1.name;
+void Connections::connect_tables(string& t1, string& t2, cardinality c) {
+    if (c == ONE_TO_MANY) {
+        table_relations[t1] = t2;
+    } else {
+        table_relations[t2] = t1;
+    }
 }
 
 bool Connections::get_relation(string& t1_name, string& t2_name, table_relation &tr) {

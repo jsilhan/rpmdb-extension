@@ -58,9 +58,10 @@ private:
     string& get_last_table_name(uFieldFilter& filter);
 public:
     Query(Swdb& db, Table& t) : db(db), relative_to(t) {};
-    // Query(Swdb& db, string& n) : db(db), relative_to(db.tables[n]) {};
     string to_select_sql();
     void filter(const string& path, string value, int value_flags);
 };
+
+typedef unique_ptr<Query> uQuery;
 
 #endif

@@ -33,7 +33,7 @@ private:
     unordered_map<string,string> table_relations;
     bool fill_tr(string& t1_name, string& t2_name, table_relation& tr);
 public:
-    void connect_tables(Table& t1, Table& t2, cardinality c);
+    void connect_tables(string& t1, string& t2, cardinality c);
     bool get_relation(string& t1_name, string& t2_name, table_relation& tr);
 };
 
