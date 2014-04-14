@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "../src/cpp/query.hpp"
-#include "../src/cpp/swdb.hpp"
+#include "../src/cpp/db.hpp"
 #include "../src/cpp/table.hpp"
  
 const string SELECT_SCRIPT = "SELECT t1.t1f1 t1.t1f2 t1.t1f3 FROM t1 "
@@ -17,7 +17,7 @@ TEST(QueryTest, SelectSqlScript) {
     uTable t2(new Table(t2_name));
     t2->add_field("t2f1", STRING);
     t2->add_field("t2f2", INT);
-    Swdb db;
+    Db db;
     db.tables[t->name] = move(t);
     db.tables[t2->name] = move(t2);
     EXPECT_EQ(db.tables.size(), 2);

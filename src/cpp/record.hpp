@@ -10,7 +10,7 @@
 #include <assert.h>
 #include <string.h>
 #include <unordered_map>
-#include "swdb.hpp"
+#include "db.hpp"
 #include "table.hpp"
 #include "utils.hpp"
 
@@ -36,11 +36,11 @@ private:
     unordered_map<string,string> values_to_insert;
     unordered_map<string,uvector<unique_ptr<Record>>> records_to_insert;
     Table& from_table;
-    Swdb& db;
+    Db& db;
 public:
-    Record(Swdb& db, Table& t, int id=-1) :
+    Record(Db& db, Table& t, int id=-1) :
         db(db), from_table(t), record_id(id), changed(false) {};
-    Record(Swdb& db, string& tn, int id=-1) :
+    Record(Db& db, string& tn, int id=-1) :
         db(db), from_table(*db.tables[tn]), record_id(id), changed(false) {};
     bool is_in_db();
     bool is_changed();

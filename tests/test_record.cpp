@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "../src/cpp/record.hpp"
 #include "../src/cpp/table.hpp"
+#include "../src/cpp/db.hpp"
  
 const string INSERT_SCRIPT = "INSERT INTO t1 (t1f3, t1f2)"
     " VALUES ('bla', '3');";
@@ -11,7 +12,7 @@ TEST(RecordTest, InsertSqlScript) {
     t->add_field("t1f1", STRING);
     t->add_field("t1f2", INT);
     t->add_field("t1f3", STRING);
-    Swdb db;
+    Db db;
     db.tables[t->name] = move(t);
     Record r(db, t1_name);
     r.set("t1f2", 3);

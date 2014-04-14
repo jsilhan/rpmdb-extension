@@ -10,7 +10,7 @@
 #include <assert.h>
 #include <string.h>
 #include "table.hpp"
-#include "swdb.hpp"
+#include "db.hpp"
 #include "utils.hpp"
 
 using std::cout;
@@ -47,7 +47,7 @@ typedef unique_ptr<FieldFilter> uFieldFilter;
 
 class Query {
 private:
-    Swdb& db;
+    Db& db;
     Table& relative_to;
     vector<uFieldFilter> filters;
     void add_select_clause(stringstream& sql);
@@ -56,8 +56,8 @@ private:
     void add_where_clauses(uFieldFilter& filter, stringstream& sql);
     string& get_last_table_name(uFieldFilter& filter);
 public:
-    Query(Swdb& db, Table& t) : db(db), relative_to(t) {};
-    Query(Swdb& db, string& tn) : db(db), relative_to(*db.tables[tn]) {};
+    Query(Db& db, Table& t) : db(db), relative_to(t) {};
+    Query(Db& db, string& tn) : db(db), relative_to(*db.tables[tn]) {};
     string to_select_sql();
     void filter(const string& path, string value, int value_flags);
 };
