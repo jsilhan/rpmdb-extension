@@ -4,9 +4,11 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <sstream>
 #include <map>
 
 using std::string;
+using std::stringstream;
 using std::vector;
 using std::unique_ptr;
 using std::map;
@@ -41,14 +43,14 @@ class Table {
 public:
     string name;
     bool protect;
-    bool expandable;
+    bool extensible;
     vector<uReservedField> reserved_fields;
     map<string,field_flags> fields_from_db;
-    Table(string& name, bool protect=false);
-    Table(const char* name, bool protect=false);
+    Table(string& name, bool protect=false, bool extensible=false);
+    Table(const char* name, bool protect=false, bool extensible=false);
     void add_field(string name, field_flags flags);
     bool field_valid(const string& name, field_flags type);
-    string to_init_sql();
+    bool to_init_sql(stringstream& sql);
 };
 
 typedef unique_ptr<Table> uTable;

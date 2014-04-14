@@ -6,8 +6,7 @@
 #include <string>
 #include <assert.h>
 #include <string.h>
-#include "table.hpp"
-#include "query.hpp"
+#include "utils.hpp"
 
 using std::cout;
 using std::cerr;

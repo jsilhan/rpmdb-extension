@@ -38,11 +38,12 @@ void Table::add_field(string name, field_flags flags) {
     fields_from_db[name] = flags;
 }
 
-Table::Table(string& name, bool protect) : name(name), protect(protect) {}
-Table::Table(const char* name, bool protect) : name(name), protect(protect) {}
+Table::Table(string& name, bool protect, bool extensible) :
+    name(name), protect(protect), extensible(extensible) {}
+Table::Table(const char* name, bool protect, bool extensible) :
+    name(name), protect(protect), extensible(extensible) {}
 
-string Table::to_init_sql() {
-    stringstream sql;
+bool Table::to_init_sql(stringstream& sql) {
     sql << "CREATE TABLE " << name << " (";
     sql << "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,";
 
@@ -58,5 +59,5 @@ string Table::to_init_sql() {
     }
 
     sql << ");";
-    return sql.str();
+    return true;
 }
