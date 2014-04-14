@@ -17,7 +17,7 @@ TEST(QueryTest, SelectSqlScript) {
     uTable t2(new Table(t2_name));
     t2->add_field("t2f1", STRING);
     t2->add_field("t2f2", INT);
-    Db db;
+    Db db("test.db");
     db.tables[t->name] = move(t);
     db.tables[t2->name] = move(t2);
     EXPECT_EQ(db.tables.size(), 2);

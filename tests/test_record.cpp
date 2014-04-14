@@ -12,7 +12,7 @@ TEST(RecordTest, InsertSqlScript) {
     t->add_field("t1f1", STRING);
     t->add_field("t1f2", INT);
     t->add_field("t1f3", STRING);
-    Db db;
+    Db db("test.db");
     db.tables[t->name] = move(t);
     Record r(db, t1_name);
     r.set("t1f2", 3);
