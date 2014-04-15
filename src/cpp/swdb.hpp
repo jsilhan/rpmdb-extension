@@ -15,7 +15,6 @@
 #include "record.hpp"
 #include "table.hpp"
 
-
 using std::cout;
 using std::cerr;
 using std::function;
@@ -33,9 +32,8 @@ public:
     vector<ustring> actors;
     pkg_type default_pkg_type;
     Swdb(string path="test.db", pkg_type type=RPM_PKG);
-    ~Swdb();
-    uRecord record(string& table_name);
-    uQuery query(string& table_name);
+    uRecord record(string table_name);
+    uQuery query(string table_name);
 };
 
 #endif

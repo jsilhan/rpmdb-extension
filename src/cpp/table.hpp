@@ -11,6 +11,8 @@ using std::string;
 using std::stringstream;
 using std::vector;
 using std::unique_ptr;
+using std::weak_ptr;
+using std::shared_ptr;
 using std::map;
 
 
@@ -27,7 +29,7 @@ enum pkg_type {
 enum field_flags {
     INT = 1,
     STRING = 2,
-    REQUIRED = 1 << 8,
+    // REQUIRED = 1 << 8,
 };
 
 struct ReservedField {
@@ -37,21 +39,26 @@ struct ReservedField {
     string description;
 };
 
-typedef unique_ptr<ReservedField> uReservedField;
+// typedef unique_ptr<ReservedField> uReservedField;
 
 class Table {
 public:
     string name;
     bool protect;
     bool extensible;
-    vector<uReservedField> reserved_fields;
+    // vector<uReservedField> reserved_fields;
     map<string,field_flags> fields_from_db;
+    map<string,weak_ptr<Table>> neightbor_tables;
     Table(string& name, bool protect=false, bool extensible=false);
     Table(const char* name, bool protect=false, bool extensible=false);
-    void add_field(string name, field_flags flags);
+    void add_field(string table_name, field_flags flags, bool required=false);
+    bool table_ref_name(shared_ptr<Table>& t, string& table_name);
     bool field_valid(const string& name, field_flags type);
     bool to_init_sql(stringstream& sql);
 };
 
 typedef unique_ptr<Table> uTable;
+typedef shared_ptr<Table> sTable;
+typedef weak_ptr<Table> wTable;
+
 #endif

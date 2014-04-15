@@ -34,18 +34,19 @@ bool Table::field_valid(const string& name, field_flags type) {
     return true;
 }
 
-void Table::add_field(string name, field_flags flags) {
-    fields_from_db[name] = flags;
+void Table::add_field(string table_name, field_flags flags, bool required) {
+    fields_from_db[table_name] = flags;
 }
 
 Table::Table(string& name, bool protect, bool extensible) :
     name(name), protect(protect), extensible(extensible) {}
+
 Table::Table(const char* name, bool protect, bool extensible) :
     name(name), protect(protect), extensible(extensible) {}
 
 bool Table::to_init_sql(stringstream& sql) {
     sql << "CREATE TABLE " << name << " (";
-    sql << "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,";
+    sql << "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,";
 
     for (auto i = fields_from_db.begin(); i != fields_from_db.end(); i++) {
         if (i != fields_from_db.begin())
@@ -60,4 +61,17 @@ bool Table::to_init_sql(stringstream& sql) {
 
     sql << ");";
     return true;
+}
+
+bool Table::table_ref_name(sTable& t, string& table_name) {
+    for (auto kv : t->neightbor_tables) {
+        sTable st = kv.second.lock();
+        bool comp = (st->name == name);
+        st.reset();
+        if (comp) {
+            table_name = kv.first;
+            return true;
+        }
+    }
+    return false;
 }

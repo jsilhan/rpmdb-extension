@@ -48,16 +48,16 @@ typedef unique_ptr<FieldFilter> uFieldFilter;
 class Query {
 private:
     Db& db;
-    Table& relative_to;
+    sTable relative_to;
     vector<uFieldFilter> filters;
     void add_select_clause(stringstream& sql);
     bool add_join_clauses(vector<ustring>& path, stringstream& sql);
-    bool add_join_clause(string& t1_name, string& t2_name, stringstream& sql);
+    bool add_join_clause(sTable& t, string& table_alias, stringstream& sql);
     void add_where_clauses(uFieldFilter& filter, stringstream& sql);
     string& get_last_table_name(uFieldFilter& filter);
 public:
-    Query(Db& db, Table& t) : db(db), relative_to(t) {};
-    Query(Db& db, string& tn) : db(db), relative_to(*db.tables[tn]) {};
+    Query(Db& db, sTable t) : db(db), relative_to(t) {};
+    Query(Db& db, string& tn) : db(db), relative_to(db.tables[tn]) {};
     string to_select_sql();
     void filter(const string& path, string value, int value_flags);
 };

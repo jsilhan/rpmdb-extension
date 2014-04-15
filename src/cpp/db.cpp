@@ -29,6 +29,23 @@ bool Db::init() {
     return ret;
 }
 
+void Db::add_many_to_one(sTable& t1, sTable& t2,
+    string forward_edge, string back_edge, bool required) {
+    // TODO handle required
+    t1->add_field(forward_edge, INT);
+    t1->neightbor_tables[forward_edge] = t2;    
+    t2->neightbor_tables[back_edge] = t1;    
+}
+
+void Db::add_many_to_one(sTable& t1, sTable& t2,
+    string forward_edge, bool required) {
+    add_many_to_one(t1, t2, forward_edge, t1->name, required);
+}
+
+void Db::add_many_to_one(sTable& t1, sTable& t2, bool required) {
+    add_many_to_one(t1, t2, t2->name, t1->name, required);
+}
+
 bool Db::init_tables() {
     stringstream sql;
     for (auto& kv : tables) {

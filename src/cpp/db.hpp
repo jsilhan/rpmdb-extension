@@ -27,8 +27,7 @@ using std::vector;
 
 class Db {
 public:
-    unordered_map<string,uTable> tables;
-    Connections connections;
+    unordered_map<string,sTable> tables;
     bool initialized;
     sqlite3 *sql_db;
     string path;
@@ -36,6 +35,11 @@ public:
     ~Db();
     bool init();
     bool init_tables();
+    void add_many_to_one(sTable& t1, sTable& t2,
+        string forward_edge, string back_edge, bool required=false);
+    void add_many_to_one(sTable& t1, sTable& t2,
+        string forward_edge, bool required=false);
+    void add_many_to_one(sTable& t1, sTable& t2, bool required=false);
     bool execute(string sql, string context);
     bool add_column(Table& t, const string& column, field_flags flags);
 };
