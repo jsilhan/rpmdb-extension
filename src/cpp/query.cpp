@@ -9,6 +9,7 @@
 #include "table.hpp"
 #include "query.hpp"
 #include "utils.hpp"
+#include <unistd.h>
 
 using std::cout;
 using std::cerr;
@@ -32,28 +33,23 @@ void Query::filter(const string& path, string value, int value_flags) {
     filters.push_back(move(filter));
 }
 
-string& Query::get_last_table_name(uFieldFilter& filter) {
-    if (filter->path.size() == 1)
-        return relative_to->name;
-    int before_last = filter->path.size() - 2;
-    return *(filter->path.at(before_last));
-}
+bool Query::add_where_clauses(uFieldFilter& filter, stringstream& sql,
+    string& last_table) {
 
-void Query::add_where_clauses(uFieldFilter& filter, stringstream& sql) {
-    string& table_name = get_last_table_name(filter);
     sql << "WHERE ";
 
     for (auto i = filters.begin(); i != filters.end(); i++) {
         if (i != filters.begin())
             sql << ", ";
         vector<ustring>& path = (*i)->path;
-        sql << table_name << "." << *(path.at(path.size() - 1));
+        sql << last_table << "." << *(path.at(path.size() - 1));
         sql << " = '" << (*i)->value << "'";
         // TODO consider flags
     }
+    return true;
 }
 
-bool Query::add_join_clause(sTable& t, string& table_alias, stringstream& sql) {
+bool Query::add_join_clause(sTable& t, string& table_alias, string& last_field, stringstream& sql) {
     if (t->neightbor_tables.count(table_alias) == 0)
         return false;
 
@@ -63,10 +59,9 @@ bool Query::add_join_clause(sTable& t, string& table_alias, stringstream& sql) {
     sql << "JOIN " << other_t.name << " ON ";
 
     if (t->fields_from_db.count(table_alias) > 0) { // many to one
-        sql << t->name << "." << table_alias << " = ";
+        sTable rel_table = relative_to->neightbor_tables[table_alias].lock();
+        sql << t->name << "." << rel_table->name << " = ";
         sql << other_t.name << "._id ";
-    } else if (t->fields_from_db.count(table_alias) == 0) { // path not exists
-        ret = false;
     } else { // one to many
         string self_name;
         if (!other_t.table_ref_name(t, self_name))
@@ -75,53 +70,69 @@ bool Query::add_join_clause(sTable& t, string& table_alias, stringstream& sql) {
             sql << t->name << "._id = " << other_t.name << "." << self_name;
     }
 
-    other_st.reset();
+    last_field = other_t.name;
     return ret;
 }
 
-bool Query::add_join_clauses(vector<ustring>& path, stringstream& sql) {
+bool Query::add_join_clauses(vector<ustring>& path, stringstream& sql, string& last_table_name) {
     sTable& first_table = relative_to;
     int i = 0;
     for (; i < path.size() - 1; i++) {
-        string& field = *path.at(i);
-        cout << "### add_join_clause for field " << field << endl;
-        bool success_join = add_join_clause(first_table, field, sql);
+        string& current_field = *path.at(i);
+        bool success_join = add_join_clause(first_table, current_field, last_table_name, sql);
         if (i != 0) // release pointer from the last round
             first_table.reset();
-        if (!success_join || first_table->neightbor_tables.count(field) == 0)
+        if (!success_join || first_table->neightbor_tables.count(current_field) == 0)
             return false;
-        first_table = first_table->neightbor_tables[field].lock();
-        // add_join_clause(first_table, field, sql);
+        first_table = first_table->neightbor_tables[current_field].lock();
     }
-    if (i != 0)
-        first_table.reset();
 
     return true;
 }
 
-void Query::add_select_clause(stringstream& sql) {
+template<typename T>
+bool unwrap_wptr(weak_ptr<T>& wp, function<void(T&)> fnc) {
+    shared_ptr<T> sp = wp.lock();
+    if (*sp == nullptr)
+        return false;
+    fnc(*sp);
+    return true;
+}
+
+bool Query::add_select_clause(stringstream& sql) {
     sql << "SELECT ";
     map<string,field_flags>& fields = relative_to->fields_from_db;
 
     for (auto i = fields.begin(); i != fields.end(); i++) {
         if (i != fields.begin())
             sql << " ";
-        sql << relative_to->name << "." << i->first;
+        if (i->second == RELATION) { // get real table name for table relation
+            if (!relative_to->with_neighbor_by_alias(i->first, [&](Table& t) {
+                sql << relative_to->name << "." << t.name;
+            }))
+                return false;
+        } else { // normal column
+            sql << relative_to->name << "." << i->first;
+        }
         // TODO consider flags
     }
 
     sql << " FROM " << relative_to->name << " ";
+    return true;
 }
 
 bool Query::to_select_sql(stringstream& sql) {
-    add_select_clause(sql);
+    if (!add_select_clause(sql))
+        return false;
+    stringstream join_clauses;
+    stringstream where_clause;
+
     for (uFieldFilter& filter : filters) {
-        if (!add_join_clauses(filter->path, sql))
+        string last_table;
+        if (!add_join_clauses(filter->path, join_clauses, last_table) ||
+            !add_where_clauses(filter, where_clause, last_table))
             return false;
     }
-    for (uFieldFilter& filter : filters) {
-        add_where_clauses(filter, sql);
-    }
-    sql << ";";
+    sql << join_clauses.str() << where_clause.str() << ";";
     return true;
 }

@@ -50,11 +50,12 @@ private:
     Db& db;
     sTable relative_to;
     vector<uFieldFilter> filters;
-    void add_select_clause(stringstream& sql);
-    bool add_join_clauses(vector<ustring>& path, stringstream& sql);
-    bool add_join_clause(sTable& t, string& table_alias, stringstream& sql);
-    void add_where_clauses(uFieldFilter& filter, stringstream& sql);
-    string& get_last_table_name(uFieldFilter& filter);
+    bool add_select_clause(stringstream& sql);
+    bool add_join_clauses(vector<ustring>& path, stringstream& sql, string& last_field);
+    bool add_join_clause(sTable& t, string& table_alias, string& last_table_name, stringstream& sql);
+    bool add_where_clauses(uFieldFilter& filter, stringstream& sql, string& last_field);
+    // string& get_last_table_name(uFieldFilter& filter);
+    void get_last_table_name(uFieldFilter& filter, string& table_name);
 public:
     Query(Db& db, sTable t) : db(db), relative_to(t) {};
     Query(Db& db, string& tn) : db(db), relative_to(db.tables[tn]) {};

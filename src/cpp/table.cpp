@@ -63,6 +63,16 @@ bool Table::to_init_sql(stringstream& sql) {
     return true;
 }
 
+bool Table::with_neighbor_by_alias(const string& table_alias, function<void(Table&)> fnc) {
+    if (neightbor_tables.count(table_alias) == 0)
+        return false;
+    sTable rel_table = neightbor_tables[table_alias].lock();
+    if (rel_table == nullptr)
+        return false;
+    fnc(*rel_table);
+    return true;
+}
+
 bool Table::table_ref_name(sTable& t, string& table_name) {
     for (auto kv : t->neightbor_tables) {
         sTable st = kv.second.lock();

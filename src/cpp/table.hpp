@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <sstream>
+#include <functional>
 #include <map>
 
 using std::string;
@@ -13,6 +14,7 @@ using std::vector;
 using std::unique_ptr;
 using std::weak_ptr;
 using std::shared_ptr;
+using std::function;
 using std::map;
 
 
@@ -29,6 +31,7 @@ enum pkg_type {
 enum field_flags {
     INT = 1,
     STRING = 2,
+    RELATION = 3,
     // REQUIRED = 1 << 8,
 };
 
@@ -53,6 +56,7 @@ public:
     Table(const char* name, bool protect=false, bool extensible=false);
     void add_field(string table_name, field_flags flags, bool required=false);
     bool table_ref_name(shared_ptr<Table>& t, string& table_name);
+    bool with_neighbor_by_alias(const string& table_alias, function<void(Table&)> fnc);
     bool field_valid(const string& name, field_flags type);
     bool to_init_sql(stringstream& sql);
 };

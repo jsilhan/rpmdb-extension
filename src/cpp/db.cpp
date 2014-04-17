@@ -32,7 +32,7 @@ bool Db::init() {
 void Db::add_many_to_one(sTable& t1, sTable& t2,
     string forward_edge, string back_edge, bool required) {
     // TODO handle required
-    t1->add_field(forward_edge, INT);
+    t1->add_field(forward_edge, RELATION);
     t1->neightbor_tables[forward_edge] = t2;    
     t2->neightbor_tables[back_edge] = t1;    
 }

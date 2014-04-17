@@ -7,16 +7,16 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include <assert.h>
 #include <string.h>
 #include <sqlite3.h>
 #include "table.hpp"
-#include "connections.hpp"
-
 
 using std::cout;
 using std::cerr;
 using std::function;
+using std::unordered_map;
 using std::ofstream;
 using std::string;
 using std::stringstream;
