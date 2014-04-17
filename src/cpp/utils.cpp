@@ -27,8 +27,3 @@ void split(const string& s, char delim, vector<ustring>& elems) {
         elems.push_back(move(item));
     }
 }
-
-// bool map_exist() {
-//     if (t.neightbor_tables.find(alias) != t.neightbor_tables.end())
-//         return false;
-// }
