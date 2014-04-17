@@ -56,37 +56,42 @@ void Query::add_where_clauses(uFieldFilter& filter, stringstream& sql) {
 bool Query::add_join_clause(sTable& t, string& table_alias, stringstream& sql) {
     if (t->neightbor_tables.count(table_alias) == 0)
         return false;
+
+    bool ret = true;
     sTable other_st = t->neightbor_tables[table_alias].lock();
     Table other_t = *other_st;
     sql << "JOIN " << other_t.name << " ON ";
-    if (t->fields_from_db.count(table_alias) > 0) {
-        sql << t->name << "." << table_alias << " = " << other_t.name << "._id ";
-    } else if (t->fields_from_db.count(table_alias) == 0) {
-        other_st.reset();
-        return false;
+
+    if (t->fields_from_db.count(table_alias) > 0) { // many to one
+        sql << t->name << "." << table_alias << " = ";
+        sql << other_t.name << "._id ";
+    } else if (t->fields_from_db.count(table_alias) == 0) { // path not exists
+        ret = false;
+    } else { // one to many
+        string self_name;
+        if (!other_t.table_ref_name(t, self_name))
+            ret = false;
+        else
+            sql << t->name << "._id = " << other_t.name << "." << self_name;
     }
-    string self_name;
-    if (!other_t.table_ref_name(t, self_name)) {
-        other_st.reset();
-        return false;
-    }
-    sql << t->name << "._id = " << other_t.name << "." << self_name;
+
     other_st.reset();
-    return true;
+    return ret;
 }
 
 bool Query::add_join_clauses(vector<ustring>& path, stringstream& sql) {
     sTable& first_table = relative_to;
     int i = 0;
-    for (i; i < path.size() - 1; i++) {
+    for (; i < path.size() - 1; i++) {
         string& field = *path.at(i);
-        add_join_clause(first_table, field, sql);
+        cout << "### add_join_clause for field " << field << endl;
+        bool success_join = add_join_clause(first_table, field, sql);
         if (i != 0) // release pointer from the last round
             first_table.reset();
-        if (first_table->neightbor_tables.count(field) == 0)
+        if (!success_join || first_table->neightbor_tables.count(field) == 0)
             return false;
         first_table = first_table->neightbor_tables[field].lock();
-        add_join_clause(first_table, field, sql);
+        // add_join_clause(first_table, field, sql);
     }
     if (i != 0)
         first_table.reset();
@@ -108,15 +113,15 @@ void Query::add_select_clause(stringstream& sql) {
     sql << " FROM " << relative_to->name << " ";
 }
 
-string Query::to_select_sql() {
-    stringstream sql;
+bool Query::to_select_sql(stringstream& sql) {
     add_select_clause(sql);
     for (uFieldFilter& filter : filters) {
-        add_join_clauses(filter->path, sql);
+        if (!add_join_clauses(filter->path, sql))
+            return false;
     }
     for (uFieldFilter& filter : filters) {
         add_where_clauses(filter, sql);
     }
     sql << ";";
-    return sql.str();
+    return true;
 }

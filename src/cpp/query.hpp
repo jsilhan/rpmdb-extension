@@ -58,7 +58,7 @@ private:
 public:
     Query(Db& db, sTable t) : db(db), relative_to(t) {};
     Query(Db& db, string& tn) : db(db), relative_to(db.tables[tn]) {};
-    string to_select_sql();
+    bool to_select_sql(stringstream& sql);
     void filter(const string& path, string value, int value_flags);
 };
 
