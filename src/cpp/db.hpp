@@ -31,7 +31,7 @@ public:
     bool initialized;
     sqlite3 *sql_db;
     string path;
-    Db(string path);
+    Db(string path="");
     ~Db();
     bool init();
     bool init_tables();

@@ -20,6 +20,8 @@ using std::string;
 using std::unique_ptr;
 using std::move;
 using std::vector;
+using std::make_shared;
+
 
 typedef unique_ptr<string> ustring;
 template<typename T> using uvector = unique_ptr<vector<T>>;
