@@ -6,6 +6,9 @@
 const string INSERT_SCRIPT = "INSERT INTO t1 (t1f3, t1f2)"
     " VALUES ('bla', '3');";
 
+const string UPDATE_SCRIPT = "UPDATE t1 SET t1f3='bla', t1f2='3' "
+    "WHERE id='-1';";
+
 TEST(RecordTest, InsertSqlScript) {
     string t1_name = "t1";
     uTable t(new Table(t1_name));
@@ -17,9 +20,12 @@ TEST(RecordTest, InsertSqlScript) {
     Record r(db, t1_name);
     r.set("t1f2", 3);
     r.set("t1f3", "bla");
-    stringstream sql;
-    EXPECT_TRUE(r.self_to_insert_sql(sql));
-    EXPECT_EQ(sql.str(), INSERT_SCRIPT);
+    stringstream insert_sql;
+    EXPECT_TRUE(r.self_to_insert_sql(insert_sql));
+    EXPECT_EQ(INSERT_SCRIPT, insert_sql.str());
+    stringstream update_sql;
+    EXPECT_TRUE(r.to_update_sql(update_sql));
+    EXPECT_EQ(UPDATE_SCRIPT, update_sql.str());
 }
 
 // test required fields

@@ -51,7 +51,7 @@ public:
     bool append(const string& key, unique_ptr<Record> record);
     bool get(const string& key, string& value);
     bool get(const string& key, int& value);
-    bool set_fk(Record& record);
+    bool set(const string& table_alias, Record& record);
     int last_id();
     void insert_columns(stringstream& sql);
     void insert_values(stringstream& sql);
@@ -59,7 +59,6 @@ public:
     bool others_to_insert_sql(stringstream& sql);
     bool self_to_insert_sql(stringstream& sql);
     bool to_update_sql(stringstream& sql);
-    bool set_fk(const Record& record);
     bool save();
 };
 
