@@ -73,8 +73,8 @@ bool Table::with_neighbor_by_alias(const string& table_alias, function<void(Tabl
     return true;
 }
 
-bool Table::table_ref_name(sTable& t, string& table_name) {
-    for (auto kv : t->neightbor_tables) {
+bool Table::table_ref_name(Table& t, string& table_name) {
+    for (auto kv : t.neightbor_tables) {
         sTable st = kv.second.lock();
         bool comp = (st->name == name);
         st.reset();

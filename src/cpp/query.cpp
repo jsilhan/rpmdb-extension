@@ -64,10 +64,10 @@ bool Query::add_join_clause(sTable& t, string& table_alias, string& last_field, 
         sql << other_t.name << "._id ";
     } else { // one to many
         string self_name;
-        if (!other_t.table_ref_name(t, self_name))
+        if (!t->table_ref_name(other_t, self_name))
             ret = false;
         else
-            sql << t->name << "._id = " << other_t.name << "." << self_name;
+            sql << t->name << "._id = " << other_t.name << "." << self_name << " ";
     }
 
     last_field = other_t.name;
@@ -75,13 +75,11 @@ bool Query::add_join_clause(sTable& t, string& table_alias, string& last_field, 
 }
 
 bool Query::add_join_clauses(vector<ustring>& path, stringstream& sql, string& last_table_name) {
-    sTable& first_table = relative_to;
+    sTable &first_table = relative_to;
     int i = 0;
     for (; i < path.size() - 1; i++) {
         string& current_field = *path.at(i);
         bool success_join = add_join_clause(first_table, current_field, last_table_name, sql);
-        if (i != 0) // release pointer from the last round
-            first_table.reset();
         if (!success_join || first_table->neightbor_tables.count(current_field) == 0)
             return false;
         first_table = first_table->neightbor_tables[current_field].lock();

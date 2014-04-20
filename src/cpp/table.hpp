@@ -55,7 +55,7 @@ public:
     Table(string& name, bool protect=false, bool extensible=false);
     Table(const char* name, bool protect=false, bool extensible=false);
     void add_field(string table_name, field_flags flags, bool required=false);
-    bool table_ref_name(shared_ptr<Table>& t, string& table_name);
+    bool table_ref_name(Table& t, string& table_name);
     bool with_neighbor_by_alias(const string& table_alias, function<void(Table&)> fnc);
     bool field_valid(const string& name, field_flags type);
     bool to_init_sql(stringstream& sql);

@@ -57,7 +57,7 @@ bool Record::append(const string& key, uRecord record) {
     if (!from_table.field_valid(key, INT))
         return false;
     // TODO check if neighbor and valid cardinality
-    if (records_to_insert.find(key) == records_to_insert.end())
+    if (records_to_insert.count(key) > 0)
         records_to_insert[key] = uvector<uRecord>(new vector<uRecord>);
     records_to_insert[key]->push_back(move(record));
     return true;
@@ -94,23 +94,15 @@ bool Record::to_update_sql(stringstream& sql) {
 }
 
 bool Record::others_to_insert_sql(stringstream& sql) {
-    // for (auto kv : records_to_insert) {
-    //     uvector<uRecord> records = *(kv.second);
-    //     for (uRecord r : records) {
-    //         if (r->is_in_db())
-    //             return false;
-    //         if (!r->set_fk(this) || !r->to_insert_sql(sql))
-    //             return false;
-    //     }
-    // }
-    return true;
-}
-
-bool Record::set_fk(Record& record) {
-    if (!record.is_in_db())
-        return false;
-    // TODO check cardinality
-    values_to_insert["_" + record.from_table.name] = to_string(record.id());
+    for (auto& kv : records_to_insert) {
+        uvector<uRecord>& records = kv.second;
+        for (uRecord& r : *records) {
+            if (r->is_in_db())
+                return false;
+            // if (!r->set_fk(this) || !r->to_insert_sql(sql))
+            //     return false;
+        }
+    }
     return true;
 }
 

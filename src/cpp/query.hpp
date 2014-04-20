@@ -46,7 +46,7 @@ struct FieldFilter {
 typedef unique_ptr<FieldFilter> uFieldFilter;
 
 class Query {
-private:
+public:
     Db& db;
     sTable relative_to;
     vector<uFieldFilter> filters;
@@ -56,8 +56,7 @@ private:
     bool add_where_clauses(uFieldFilter& filter, stringstream& sql, string& last_field);
     // string& get_last_table_name(uFieldFilter& filter);
     void get_last_table_name(uFieldFilter& filter, string& table_name);
-public:
-    Query(Db& db, sTable t) : db(db), relative_to(t) {};
+    Query(Db& db, sTable& t) : db(db), relative_to(t) {};
     Query(Db& db, string& tn) : db(db), relative_to(db.tables[tn]) {};
     bool to_select_sql(stringstream& sql);
     void filter(const string& path, string value, int value_flags);
