@@ -26,14 +26,14 @@ using std::vector;
 Swdb::Swdb(string path, pkg_type type) :
     db(path), default_pkg_type(type) {
     // TODO actor params
-    string pkg("pkg");
-    string repo("repo");
-    string extension("extension");
-    string pkg_change("pkg_change");
-    string group("group");
-    string transaction("transaction");
+    string pkg("pkgs");
+    string repo("repos");
+    string extension("extensions");
+    string pkg_change("pkg_changes");
+    string group("groups");
+    string transaction("transactions");
     string actors("actors");
-    string trans_output("trans_output");
+    string trans_output("trans_outputs");
 
     sTable t_pkg(new Table(pkg));
     sTable t_repo(new Table(repo));
@@ -43,6 +43,14 @@ Swdb::Swdb(string path, pkg_type type) :
     sTable t_transaction(new Table(transaction));
     sTable t_actors(new Table(actors));
     sTable t_trans_output(new Table(trans_output));
+
+    db.tables[pkg] = t_pkg;
+    db.tables[repo] = t_repo;
+    db.tables[extension] = t_extension;
+    db.tables[pkg_change] = t_pkg_change;
+    db.tables[group] = t_group;
+    db.tables[transaction] = t_transaction;
+    db.tables[trans_output] = t_trans_output;
     
     t_pkg->add_field("name", STRING);
     t_pkg->add_field("type", INT);
@@ -76,8 +84,10 @@ Swdb::Swdb(string path, pkg_type type) :
     t_trans_output->add_field("msg", STRING);
     t_trans_output->add_field("type", INT);
     db.add_many_to_one(t_trans_output, t_transaction);
+}
 
-    db.init();
+bool Swdb::init() {
+    return db.init();
 }
 
 uRecord Swdb::record(string table_name) {

@@ -21,7 +21,7 @@ TEST(RecordTest, InsertSqlScript) {
     r.set("t1f2", 3);
     r.set("t1f3", "bla");
     stringstream insert_sql;
-    EXPECT_TRUE(r.self_to_insert_sql(insert_sql));
+    EXPECT_TRUE(r.to_insert_sql(insert_sql));
     EXPECT_EQ(INSERT_SCRIPT, insert_sql.str());
     stringstream update_sql;
     EXPECT_TRUE(r.to_update_sql(update_sql));
