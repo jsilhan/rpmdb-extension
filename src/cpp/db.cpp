@@ -65,11 +65,12 @@ Db::~Db() {
 
 bool Db::execute(string sql, string context) {
     char *err_msg = nullptr;
+    cout << "$ " << context << "> " << sql << "\n";
     int rc = sqlite3_exec(sql_db, sql.c_str(), NULL, 0, &err_msg);
     if (rc == SQLITE_OK)
         return true;
     if (!context.empty())
-        cerr << context << ", SQL error: " << err_msg << "\n";
+        cerr << "SQL error: " << err_msg << " [" << context << "]\n";
     sqlite3_free(err_msg);
     return false;
 }
