@@ -7,6 +7,7 @@
 #include <sstream>
 #include <functional>
 #include <map>
+#include <sqlite3.h>
 
 using std::string;
 using std::stringstream;
@@ -32,6 +33,8 @@ enum field_flags {
     INT = 1,
     STRING = 2,
     RELATION = 3,
+    NULL_VAL = 4,
+    APPENDED = 5,
     // REQUIRED = 1 << 8,
 };
 
@@ -59,6 +62,8 @@ public:
     bool with_neighbor_by_alias(const string& table_alias, function<void(Table&)> fnc);
     bool field_valid(const string& name, field_flags type);
     bool to_init_sql(stringstream& sql);
+    bool cell(const string& key, int& i);
+    void update_fields_metadata(sqlite3_stmt* statement);
 };
 
 typedef unique_ptr<Table> uTable;

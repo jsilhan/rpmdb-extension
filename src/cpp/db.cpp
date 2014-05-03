@@ -6,10 +6,12 @@
 #include <string>
 #include <assert.h>
 #include <string.h>
+#include <sqlite3.h> // TODO redesign - only in db
 #include "db.hpp"
 
 using std::cout;
 using std::cerr;
+using std::endl;
 using std::function;
 using std::ofstream;
 using std::string;
@@ -22,8 +24,10 @@ using std::vector;
 bool Db::init() {
     if (initialized)
         return true;
+    cout << "### sql_db = " << sql_db << endl;
     if (sqlite3_open(path.c_str(), &sql_db))
         cerr << "Can't open database: " << sqlite3_errmsg(sql_db) << "\n";
+    cout << "### sql_db = " << sql_db << endl;
     bool ret = init_tables();
     initialized = true;
     return ret;
@@ -46,6 +50,19 @@ void Db::add_many_to_one(sTable& t1, sTable& t2, bool required) {
     add_many_to_one(t1, t2, t2->name, t1->name, required);
 }
 
+bool Db::prepare_select(string& sql, sqlite3_stmt** statement) {
+    init();
+    cout << "$ select> " << sql << "\n";
+
+    const char * s = "SELECT * WHERE pkgs;";
+    cout << "### sql_db = " << sql_db << endl;
+    int rc = sqlite3_prepare(sql_db, s, -1, statement, 0) == SQLITE_OK;
+    if (rc == SQLITE_OK)
+        return true;
+    cerr << "SQL error: [select]" << endl;
+    return false;
+}
+
 bool Db::init_tables() {
     stringstream sql;
     for (auto& kv : tables) {
@@ -60,6 +77,7 @@ Db::Db(string path) : sql_db(nullptr),
     initialized(false), path(path) {}
 
 Db::~Db() {
+    cout << "### closing db" << endl;
     sqlite3_close(sql_db);
 }
 
@@ -70,7 +88,7 @@ bool Db::execute(string sql, string context) {
     if (rc == SQLITE_OK)
         return true;
     if (!context.empty())
-        cerr << "SQL error: " << err_msg << " [" << context << "]\n";
+        cerr << "SQL error: " << err_msg << " [" << context << "]" << endl;
     sqlite3_free(err_msg);
     return false;
 }

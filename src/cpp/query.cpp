@@ -100,22 +100,22 @@ bool unwrap_wptr(weak_ptr<T>& wp, function<void(T&)> fnc) {
 
 bool Query::add_select_clause(stringstream& sql) {
     sql << "SELECT ";
-    map<string,field_flags>& fields = relative_to->fields_from_db;
+    // map<string,field_flags>& fields = relative_to->fields_from_db;
 
-    for (auto i = fields.begin(); i != fields.end(); i++) {
-        if (i != fields.begin())
-            sql << " ";
-        if (i->second == RELATION) { // get real table name for table relation
-            if (!relative_to->with_neighbor_by_alias(i->first, [&](Table& t) {
-                sql << relative_to->name << "." << t.name;
-            }))
-                return false;
-        } else { // normal column
-            sql << relative_to->name << "." << i->first;
-        }
-        // TODO consider flags
-    }
-
+    // for (auto i = fields.begin(); i != fields.end(); i++) {
+    //     if (i != fields.begin())
+    //         sql << ", ";
+    //     if (i->second == RELATION) { // get real table name for table relation
+    //         if (!relative_to->with_neighbor_by_alias(i->first, [&](Table& t) {
+    //             sql << relative_to->name << "." << t.name;
+    //         }))
+    //             return false;
+    //     } else { // normal column
+    //         sql << relative_to->name << "." << i->first;
+    //     }
+    //     // TODO consider flags
+    // }
+    sql << relative_to->name << ".*";
     sql << " FROM " << relative_to->name << " ";
     return true;
 }

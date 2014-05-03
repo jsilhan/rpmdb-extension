@@ -6,11 +6,13 @@
 #include <string>
 #include <assert.h>
 #include <string.h>
+#include <iterator>
 #include "table.hpp"
 #include "record.hpp"
 
 using std::cout;
 using std::cerr;
+using std::distance;
 using std::function;
 using std::ofstream;
 using std::string;
@@ -47,7 +49,7 @@ bool Record::set(const string& key, uvector<uRecord> records) {
     if (!from_table.field_valid(key, INT))
         return false;
     // TODO check if neighbor and valid cardinality
-    if (records_to_insert.find(key) != records_to_insert.end())
+    if (records_to_insert.count(key) > 0)
         delete records_to_insert[key].release();
     records_to_insert[key] = move(records);
     return true;
@@ -64,16 +66,26 @@ bool Record::append(const string& key, uRecord record) {
 };
 
 bool Record::get(const string& key, int& value) {
-    if (!from_table.field_valid(key, INT))
+    int i;
+    if (!from_table.cell(key, i))
         return false;
-    value = stoi(values_from_db[key]);
+    if (i >= values_from_db.size())
+        return false;
+    row r = values_from_db[i];
+    if (r.type != INT)
+        return false;
+    value = r.number;
     return true;
 };
 
 bool Record::get(const string& key, string& value) {
-    if (!from_table.field_valid(key, STRING))
+    int i;
+    if (!from_table.cell(key, i))
         return false;
-    value = values_from_db[key];
+    row r = values_from_db[i];
+    if (r.type != STRING)
+        return false;
+    value = r.text;
     return true;
 };
 
@@ -158,7 +170,7 @@ bool Record::save() {
     } else if (!to_insert_sql(sql)) {
         return false;
     }
-    // if (execute(sql.str()))
-    //     return true;
+    if (db.execute(sql.str(), "update/insert record"))
+        return true;
     return false;
 }

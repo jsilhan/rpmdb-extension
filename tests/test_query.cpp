@@ -3,14 +3,14 @@
 #include "../src/cpp/db.hpp"
 #include "../src/cpp/table.hpp"
  
-const string SELECT_SCRIPT = "SELECT t1.t1f1 t1.t1f2 t1.t1f3 t1.t2 FROM t1 "
+const string SELECT_SCRIPT = "SELECT t1.t1f1, t1.t1f2, t1.t1f3, t1.t2 FROM t1 "
     "JOIN t2 ON t1.t2 = t2._id "
     "WHERE t2.t2f1 = 'val';";
  
-const string SELECT_WITHIN_TABLE_SCRIPT = "SELECT t2.t2f1 t2.t2f2 FROM t2 "
+const string SELECT_WITHIN_TABLE_SCRIPT = "SELECT t2.t2f1, t2.t2f2 FROM t2 "
     "WHERE t2.t2f1 = 'val';";
  
-const string SELECT_3_SCRIPT = "SELECT t3.t2 t3.t3f1 FROM t3 "
+const string SELECT_3_SCRIPT = "SELECT t3.t2, t3.t3f1 FROM t3 "
     "JOIN t2 ON t3.t2 = t2._id "
     "JOIN t1 ON t2._id = t1.t2 "
     "WHERE t1.t1f1 = 'val';";

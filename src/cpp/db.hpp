@@ -42,6 +42,7 @@ public:
     void add_many_to_one(sTable& t1, sTable& t2, bool required=false);
     bool execute(string sql, string context);
     bool add_column(Table& t, const string& column, field_flags flags);
+    bool prepare_select(string& sql, sqlite3_stmt** statement);
 };
 
 #endif
