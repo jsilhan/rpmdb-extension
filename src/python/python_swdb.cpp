@@ -24,7 +24,7 @@ private:
 #include <boost/python.hpp>
 using namespace boost::python;
 
-BOOST_PYTHON_MODULE(member)
+BOOST_PYTHON_MODULE(swdb)
 {
     class_<SomeClass>("SomeClass", init<std::string>())
         .def_readwrite("name", & SomeClass::name)

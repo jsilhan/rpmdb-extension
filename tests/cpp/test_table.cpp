@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "../src/cpp/table.hpp"
-#include "../src/cpp/utils.hpp"
+#include "../../src/cpp/table.hpp"
+#include "../../src/cpp/utils.hpp"
  
 const string INIT_SCRIPT = "CREATE TABLE IF NOT EXISTS t ("
     "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"

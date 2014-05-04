@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "../src/cpp/query.hpp"
-#include "../src/cpp/db.hpp"
-#include "../src/cpp/table.hpp"
+#include "../../src/cpp/query.hpp"
+#include "../../src/cpp/db.hpp"
+#include "../../src/cpp/table.hpp"
  
 const string SELECT_SCRIPT = "SELECT t1.* FROM t1 "
     "JOIN t2 ON t1.t2 = t2._id "

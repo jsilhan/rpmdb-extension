@@ -11,3 +11,4 @@ Testing/Temporary/*
 .project
 onSave.sh
 test.sh
+*.pyc

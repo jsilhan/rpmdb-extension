@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <gtest/gtest.h>
-#include "../src/cpp/swdb.hpp"
-#include "../src/cpp/record.hpp"
+#include "../../src/cpp/swdb.hpp"
+#include "../../src/cpp/record.hpp"
  
 class SwdbTest : public ::testing::Test {
 public:

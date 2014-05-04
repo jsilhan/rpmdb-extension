@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "../src/cpp/record.hpp"
-#include "../src/cpp/table.hpp"
-#include "../src/cpp/db.hpp"
+#include "../../src/cpp/record.hpp"
+#include "../../src/cpp/table.hpp"
+#include "../../src/cpp/db.hpp"
 
 const string INSERT_SCRIPT = "INSERT INTO t1 (t1f3, t1f2)"
     " VALUES ('bla', '3');";
