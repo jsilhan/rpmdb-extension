@@ -20,7 +20,7 @@ TEST_F(RecordTest, TestRecordGet) {
     uTable t(new Table(t1_name));
     t->add_field("name", STRING);
     t->add_field("type", INT);
-    sDb db(new Db());
+    sDb db(new Db("unused.db"));
     db->tables[t->name] = move(t);
     Record r1(db, t1_name);
     ucell c1(new cell(INT, 1));
@@ -44,7 +44,7 @@ TEST_F(RecordTest, InsertSqlScript) {
     t->add_field("t1f1", STRING);
     t->add_field("t1f2", INT);
     t->add_field("t1f3", STRING);
-    sDb db(new Db());
+    sDb db(new Db("unused.db"));
     db->tables[t->name] = move(t);
     Record r(db, t1_name);
     r.set("t1f2", 3);

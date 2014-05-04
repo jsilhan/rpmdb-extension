@@ -56,21 +56,21 @@ typedef unique_ptr<cell> ucell;
 
 class Record {
 private:
-    FRIEND_TEST(RecordTest, TestRecordGet);
-    FRIEND_TEST(RecordTest, InsertSqlScript);
-    void insert_columns(stringstream& sql);
-    void insert_values(stringstream& sql);
-    bool to_insert_sql(stringstream& sql);
-    bool others_to_insert_sql(stringstream& sql);
-    bool self_to_insert_sql(stringstream& sql);
-    bool to_update_sql(stringstream& sql);
-public:
     sDb db;
     Table& from_table;
     bool changed;
     vector<ucell> values_from_db;
     unordered_map<string,string> values_to_insert;
     unordered_map<string,uvector<unique_ptr<Record>>> records_to_insert;
+    void insert_columns(stringstream& sql);
+    void insert_values(stringstream& sql);
+    bool to_insert_sql(stringstream& sql);
+    bool others_to_insert_sql(stringstream& sql);
+    bool self_to_insert_sql(stringstream& sql);
+    bool to_update_sql(stringstream& sql);
+    FRIEND_TEST(RecordTest, TestRecordGet);
+    FRIEND_TEST(RecordTest, InsertSqlScript);
+public:
     Record(sDb db, Table& t) :
         db(db), from_table(t), changed(false) {};
     Record(sDb db, string& tn) :

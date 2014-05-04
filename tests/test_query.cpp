@@ -33,7 +33,7 @@ public:
         t2 = make_shared<Table>(t2_name);
         t2->add_field("t2f1", STRING);
         t2->add_field("t2f2", INT);
-        db = make_shared<Db>();
+        db = make_shared<Db>("unused.db");
         db->tables[t1->name] = t1;
         db->tables[t2->name] = t2;
     }

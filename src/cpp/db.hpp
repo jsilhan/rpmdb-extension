@@ -31,7 +31,7 @@ public:
     sqlite3 *sql_db;
     bool initialized;
     unordered_map<string,sTable> tables;
-    Db(string path="");
+    Db(string path);
     ~Db();
     bool init();
     bool init_tables();
