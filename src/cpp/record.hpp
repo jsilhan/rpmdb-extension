@@ -58,12 +58,12 @@ class Record {
 private:
     FRIEND_TEST(RecordTest, TestRecordGet);
 public:
+    sDb db;
+    Table& from_table;
     bool changed;
     vector<ucell> values_from_db;
     unordered_map<string,string> values_to_insert;
     unordered_map<string,uvector<unique_ptr<Record>>> records_to_insert;
-    Table& from_table;
-    sDb db;
     Record(sDb db, Table& t) :
         db(db), from_table(t), changed(false) {};
     Record(sDb db, string& tn) :

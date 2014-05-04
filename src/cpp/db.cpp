@@ -67,8 +67,8 @@ bool Db::init_tables() {
     return execute(sql.str(), "init_tables");
 }
 
-Db::Db(string path) : sql_db(nullptr),
-    initialized(false), path(path) {}
+Db::Db(string path) : path(path), sql_db(nullptr),
+    initialized(false) {}
 
 Db::~Db() {
     if (sql_db != nullptr)

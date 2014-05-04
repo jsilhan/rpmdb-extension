@@ -21,7 +21,7 @@ TEST(TableTest, Cell) {
     t.add_field("f2", INT);
     t.add_field("f3", STRING);
     stringstream sql;
-    int i;
+    unsigned long i;
     EXPECT_TRUE(t.get_cell_index("f2", i));
     EXPECT_EQ(1, i);
     EXPECT_TRUE(t.get_cell_index("f3", i));

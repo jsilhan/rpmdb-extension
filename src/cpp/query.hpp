@@ -67,16 +67,16 @@ public:
 
     class iterator {
     private:
+        sDb db;
+        Table& table;
         sqlite3_stmt *statement;
         int res;
-        Table& table;
-        sDb db;
     public:
         typedef iterator self_type;
         typedef std::forward_iterator_tag iterator_category;
         typedef int difference_type;
-        iterator(Query& q, int r) : table(*q.relative_to), db(q.db), statement(nullptr), res(r) {}
-        iterator(Query& q) : table(*q.relative_to), db(q.db), statement(nullptr) {
+        iterator(Query& q, int r) : db(q.db), table(*q.relative_to), statement(nullptr), res(r) {}
+        iterator(Query& q) : db(q.db), table(*q.relative_to), statement(nullptr) {
             stringstream sql;
             if (!q.to_select_sql(sql))
                 res = SQLITE_DONE;

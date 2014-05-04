@@ -38,7 +38,7 @@ void Table::add_field(string table_name, field_flags flags, bool required) {
     fields_from_db[table_name] = flags;
 }
 
-bool Table::get_cell_index(const string& key, int& i) {
+bool Table::get_cell_index(const string& key, unsigned long& i) {
     auto it = fields_from_db.find(key);
     if (it == fields_from_db.end())
         return false;
@@ -55,12 +55,12 @@ bool Table::get_cell_index(const string& key, int& i) {
  * Note that added columns cannot be removed.
  */
 void Table::update_fields_metadata(sqlite3_stmt* statement) {
-    int columns_count = sqlite3_column_count(statement);
+    unsigned long columns_count = sqlite3_column_count(statement);
     if (columns_count == fields_from_db.size())
         return;
     assert(columns_count > fields_from_db.size());
     // first column is '_id' and isn't included in fields_from_db
-    for (int i = fields_from_db.size() + 1; i < columns_count; i++) {
+    for (unsigned long i = fields_from_db.size() + 1; i < columns_count; i++) {
         const char *column_name = sqlite3_column_name(statement, i);
         fields_from_db[string(column_name)] = APPENDED;
     }

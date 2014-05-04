@@ -66,7 +66,7 @@ bool Record::append(const string& key, uRecord record) {
 };
 
 bool Record::get(const string& key, int& value) {
-    int i;
+    unsigned long i;
     if (!from_table.get_cell_index(key, i))
         return false;
     if (i >= values_from_db.size())
@@ -79,7 +79,7 @@ bool Record::get(const string& key, int& value) {
 };
 
 bool Record::get(const string& key, string& value) {
-    int i;
+    unsigned long i;
     if (!from_table.get_cell_index(key, i))
         return false;
     if (values_from_db[i]->type != STRING)

@@ -77,8 +77,7 @@ bool Query::add_join_clause(sTable& t, string& table_alias, string& last_field, 
 bool Query::add_join_clauses(vector<ustring>& path, stringstream& sql, string& last_table_name) {
     sTable &first_table = relative_to;
     last_table_name = relative_to->name;
-    int i = 0;
-    for (; i < path.size() - 1; i++) {
+    for (unsigned long i = 0; i < path.size() - 1; i++) {
         string& current_field = *path.at(i);
         bool success_join = add_join_clause(first_table, current_field, last_table_name, sql);
         if (!success_join || first_table->neightbor_tables.count(current_field) == 0)

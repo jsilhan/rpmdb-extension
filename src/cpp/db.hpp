@@ -27,10 +27,10 @@ using std::vector;
 
 class Db {
 public:
-    unordered_map<string,sTable> tables;
-    bool initialized;
-    sqlite3 *sql_db;
     string path;
+    sqlite3 *sql_db;
+    bool initialized;
+    unordered_map<string,sTable> tables;
     Db(string path="");
     ~Db();
     bool init();
