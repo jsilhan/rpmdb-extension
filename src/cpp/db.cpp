@@ -48,16 +48,12 @@ void Db::add_many_to_one(sTable& t1, sTable& t2, bool required) {
     add_many_to_one(t1, t2, t2->name, t1->name, required);
 }
 
-bool Db::prepare_select(string& sql, sqlite3_stmt** statement) {
+bool Db::prepare_select(stringstream& sql, sqlite3_stmt** statement) {
     init();
-    cout << "$ select> " << sql << "\n";
-
-    const char * s = "SELECT * WHERE pkgs;";
-    cout << "### sql_db = " << sql_db << endl;
-    int rc = sqlite3_prepare(sql_db, s, -1, statement, 0) == SQLITE_OK;
+    int rc = sqlite3_prepare(sql_db, sql.str().c_str(), -1, statement, 0);
     if (rc == SQLITE_OK)
         return true;
-    cerr << "SQL error: [select]" << endl;
+    cerr << "SQL error: [select], errcode = " << rc << endl;
     return false;
 }
 
@@ -75,7 +71,8 @@ Db::Db(string path) : sql_db(nullptr),
     initialized(false), path(path) {}
 
 Db::~Db() {
-    sqlite3_close(sql_db);
+    if (sql_db != nullptr)
+        sqlite3_close(sql_db);
 }
 
 bool Db::execute(string sql, string context) {

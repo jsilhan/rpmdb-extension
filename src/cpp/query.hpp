@@ -80,7 +80,7 @@ public:
             stringstream sql;
             if (!q.to_select_sql(sql))
                 res = SQLITE_DONE;
-            int rc = sqlite3_prepare(q.db->sql_db, sql.str().c_str(), -1, &statement, NULL);
+            int rc = db->prepare_select(sql, &statement);
             if (rc != SQLITE_OK)
                 res = SQLITE_DONE;
 
