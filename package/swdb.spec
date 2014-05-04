@@ -16,14 +16,15 @@ Requires:   sqlite-devel
 Library for Package Managers for storing additional package related information
 
 
-%description -n python-hawkey
-Python 2 bindings for the hawkey library.
+%description -n python-swdb
+Python 2 bindings for the swdb library.
 
-%package -n python-hawkey
+%package -n python-swdb
 Summary:    Python bindings for the swdb library
 Group:      Development/Languages
 Requires:   boost-python
 BuildRequires:   boost-python
+BuildRequires:   boost-devel
 Requires:   %{name}%{?_isa} = %{version}-%{release}
 
 

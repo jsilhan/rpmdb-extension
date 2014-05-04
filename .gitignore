@@ -6,3 +6,8 @@ cmake_install.cmake
 tests/Testing/
 *.so*
 test_main
+Testing/Temporary/*
+.cproject
+.project
+onSave.sh
+test.sh
