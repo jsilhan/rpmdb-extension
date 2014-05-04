@@ -38,14 +38,15 @@ void Table::add_field(string table_name, field_flags flags, bool required) {
     fields_from_db[table_name] = flags;
 }
 
-bool Table::cell(const string& key, int& i) {
+bool Table::get_cell_index(const string& key, int& i) {
     auto it = fields_from_db.find(key);
     if (it == fields_from_db.end())
         return false;
-    i = distance(fields_from_db.begin(), it);
+    // in fields_from_db isn't stored '_id' column but in
+    // record.values_from_db is
+    i = distance(fields_from_db.begin(), it) + 1;
     return true;
 }
-
 
 /**
  * Update table metadata (column name and type) from recent record
@@ -58,7 +59,8 @@ void Table::update_fields_metadata(sqlite3_stmt* statement) {
     if (columns_count == fields_from_db.size())
         return;
     assert(columns_count > fields_from_db.size());
-    for (int i = fields_from_db.size(); i < columns_count; i++) {
+    // first column is '_id' and isn't included in fields_from_db
+    for (int i = fields_from_db.size() + 1; i < columns_count; i++) {
         const char *column_name = sqlite3_column_name(statement, i);
         fields_from_db[string(column_name)] = APPENDED;
     }

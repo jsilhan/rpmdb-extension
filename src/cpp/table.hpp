@@ -62,7 +62,7 @@ public:
     bool with_neighbor_by_alias(const string& table_alias, function<void(Table&)> fnc);
     bool field_valid(const string& name, field_flags type);
     bool to_init_sql(stringstream& sql);
-    bool cell(const string& key, int& i);
+    bool get_cell_index(const string& key, int& i);
     void update_fields_metadata(sqlite3_stmt* statement);
 };
 

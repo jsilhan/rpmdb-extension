@@ -16,4 +16,17 @@ TEST(TableTest, InitSqlScript) {
     EXPECT_EQ(sql.str(), INIT_SCRIPT);
 }
 
+TEST(TableTest, Cell) {
+    Table t("t");
+    t.add_field("f2", INT);
+    t.add_field("f3", STRING);
+    stringstream sql;
+    int i;
+    EXPECT_TRUE(t.get_cell_index("f2", i));
+    EXPECT_EQ(1, i);
+    EXPECT_TRUE(t.get_cell_index("f3", i));
+    EXPECT_EQ(2, i);
+    EXPECT_FALSE(t.get_cell_index("bla", i));
+}
+
 // test expandable fields

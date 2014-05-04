@@ -24,10 +24,8 @@ using std::vector;
 bool Db::init() {
     if (initialized)
         return true;
-    cout << "### sql_db = " << sql_db << endl;
     if (sqlite3_open(path.c_str(), &sql_db))
         cerr << "Can't open database: " << sqlite3_errmsg(sql_db) << "\n";
-    cout << "### sql_db = " << sql_db << endl;
     bool ret = init_tables();
     initialized = true;
     return ret;
@@ -77,13 +75,12 @@ Db::Db(string path) : sql_db(nullptr),
     initialized(false), path(path) {}
 
 Db::~Db() {
-    cout << "### closing db" << endl;
     sqlite3_close(sql_db);
 }
 
 bool Db::execute(string sql, string context) {
     char *err_msg = nullptr;
-    cout << "$ " << context << "> " << sql << "\n";
+    // cout << "$ " << context << "> " << sql << "\n";
     int rc = sqlite3_exec(sql_db, sql.c_str(), NULL, 0, &err_msg);
     if (rc == SQLITE_OK)
         return true;

@@ -64,102 +64,57 @@ public:
     Query(Db& db, string& tn) : db(db), relative_to(db.tables[tn]) {};
     bool to_select_sql(stringstream& sql);
     void filter(const string& path, string value, int value_flags);
-    int iter(function<void(Record&)> fnc) {
-        db.init();
-        int count = 0;
-        sqlite3_stmt* statement;
-        stringstream ss;
-        if (!to_select_sql(ss))
-            return -1;
-        cout << "### query str = " << ss.str() << endl;
-        int rc = sqlite3_prepare(db.sql_db, ss.str().c_str(), -1, &statement, NULL);
-        if (rc != SQLITE_OK)
-            return -1;
-        cout << "### iter, rc = " << rc << endl;
 
-        int s = sqlite3_step(statement);
-        relative_to->update_fields_metadata(statement);
-        while (1) {
-            cout << "### in select while, step = " << s << endl;
-            if (s == SQLITE_ROW) {
-                Record r(db, *relative_to, statement);
-                fnc(r);
-                count++;
-            } else if (s == SQLITE_DONE) {
-                break;
-            } else {
-                cerr << "### failed step" << endl;
-                return -1;
-            }
-            s = sqlite3_step(statement);
-        }
-        return count;
-    }
-
-    typedef int size_type;
- 
     class iterator {
+    private:
+        sqlite3_stmt *statement;
+        int res;
+        Query& query;
     public:
         typedef iterator self_type;
         typedef std::forward_iterator_tag iterator_category;
         typedef int difference_type;
-        iterator(Table& t, Db& db, string sql) : statement(nullptr),
-            table(t), db(db), sql(sql), res(-1) {}
-        iterator(Table& t, Db& db, string sql, int s) : statement(nullptr),
-            table(t), db(db), sql(sql), res(s) {}
+        iterator(Query& q, int r) : query(q), statement(nullptr), res(r) {}
+        iterator(Query& q) : query(q), statement(nullptr) {
+            stringstream sql;
+            if (!query.to_select_sql(sql))
+                res = SQLITE_DONE;
+            int rc = sqlite3_prepare(query.db.sql_db, sql.str().c_str(), -1, &statement, NULL);
+            if (rc != SQLITE_OK)
+                res = SQLITE_DONE;
+
+            res = sqlite3_step(statement);
+            if (res == SQLITE_ROW)
+                query.relative_to->update_fields_metadata(statement);
+        }
         ~iterator() {
-            sqlite3_finalize(statement);
+            // if (statement != nullptr)
+            //     sqlite3_finalize(statement);
         }
         self_type operator++() {
-            init();
             res = sqlite3_step(statement);
-            cout << "### step, res = " << res << endl;
             return *this;
         }
         self_type operator++(int junk) {
-            init();
             res = sqlite3_step(statement);
-            cout << "### junk step, res = " << res << endl;
             return *this;
         }
-        uRecord operator*() {
-            init();
-            uRecord record(nullptr);
-            cout << "### deref ok = " << (res == SQLITE_ROW) << endl;
-            if (res == SQLITE_ROW) {
-                cout << "### step" << endl;
-                string id = (char *) sqlite3_column_text(statement, 0);
-                record = uRecord(new Record(db, table, stoi(id)));
-            }
-            return record;
+        Record operator*() {
+            return Record(query.db, *(query.relative_to), statement);
         }
-        // Record operator->() { return statement; }
+        // Record operator->() { return Record(db, table, statement); }
         bool operator==(const self_type& rhs) {
-            return res == rhs.res || statement == rhs.statement;
+            return res == rhs.res;
         }
         bool operator!=(const self_type& rhs) {
             return !(*this == rhs);
         }
-    private:
-        bool init() {
-            if (statement == nullptr)
-                return db.prepare_select(sql, &statement);
-            return true;
-        }
-        sqlite3_stmt *statement;
-        string sql;
-        int res;
-        Table& table;
-        Db& db;
     };
     iterator begin() {
-        stringstream ss;
-        if (to_select_sql(ss))
-            return iterator(*relative_to, db, ss.str());
-        return end();
+        return iterator(*this);
     }
     iterator end() {
-        return iterator(*relative_to, db, "", SQLITE_DONE);
+        return iterator(*this, SQLITE_DONE);
     }
 };
 

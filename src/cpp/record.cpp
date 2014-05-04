@@ -24,7 +24,7 @@ using std::to_string;
 using std::stoi;
 
 bool Record::is_in_db() {
-    return record_id >= 0;
+    return !values_from_db.empty();
 };
 
 bool Record::is_changed() {
@@ -67,25 +67,24 @@ bool Record::append(const string& key, uRecord record) {
 
 bool Record::get(const string& key, int& value) {
     int i;
-    if (!from_table.cell(key, i))
+    if (!from_table.get_cell_index(key, i))
         return false;
     if (i >= values_from_db.size())
         return false;
-    row r = values_from_db[i];
-    if (r.type != INT)
+    ucell& r = values_from_db[i];
+    if (r->type != INT)
         return false;
-    value = r.number;
+    value = r->number;
     return true;
 };
 
 bool Record::get(const string& key, string& value) {
     int i;
-    if (!from_table.cell(key, i))
+    if (!from_table.get_cell_index(key, i))
         return false;
-    row r = values_from_db[i];
-    if (r.type != STRING)
+    if (values_from_db[i]->type != STRING)
         return false;
-    value = r.text;
+    value = values_from_db[i]->text;
     return true;
 };
 
@@ -101,7 +100,7 @@ bool Record::to_update_sql(stringstream& sql) {
             size--;
         }
     }
-    sql << " WHERE " << "id='" << record_id << "';";
+    sql << " WHERE " << "id='" << id() << "';";
     return true;
 }
 
