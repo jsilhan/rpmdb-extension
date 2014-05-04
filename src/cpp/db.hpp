@@ -45,4 +45,6 @@ public:
     bool prepare_select(string& sql, sqlite3_stmt** statement);
 };
 
+typedef shared_ptr<Db> sDb;
+
 #endif

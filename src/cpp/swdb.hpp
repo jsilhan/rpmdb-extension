@@ -28,7 +28,7 @@ using std::vector;
 
 class Swdb {
 public:
-    Db db;
+    sDb db;
     vector<ustring> actors;
     pkg_type default_pkg_type;
     Swdb(string path="test.db", pkg_type type=RPM_PKG);

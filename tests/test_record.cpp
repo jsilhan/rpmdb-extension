@@ -20,8 +20,8 @@ TEST_F(RecordTest, TestRecordGet) {
     uTable t(new Table(t1_name));
     t->add_field("name", STRING);
     t->add_field("type", INT);
-    Db db("test.db");
-    db.tables[t->name] = move(t);
+    sDb db(new Db());
+    db->tables[t->name] = move(t);
     Record r1(db, t1_name);
     ucell c1(new cell(INT, 1));
     ucell c2(new cell(STRING, "pkg_name_xxx"));
@@ -44,8 +44,8 @@ TEST(RecordTest2, InsertSqlScript) {
     t->add_field("t1f1", STRING);
     t->add_field("t1f2", INT);
     t->add_field("t1f3", STRING);
-    Db db("test.db");
-    db.tables[t->name] = move(t);
+    sDb db(new Db());
+    db->tables[t->name] = move(t);
     Record r(db, t1_name);
     r.set("t1f2", 3);
     r.set("t1f3", "bla");

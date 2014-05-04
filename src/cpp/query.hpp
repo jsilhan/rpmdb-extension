@@ -51,7 +51,7 @@ typedef unique_ptr<FieldFilter> uFieldFilter;
 
 class Query {
 public:
-    Db& db;
+    sDb db;
     sTable relative_to;
     vector<uFieldFilter> filters;
     bool add_select_clause(stringstream& sql);
@@ -60,8 +60,8 @@ public:
     bool add_where_clauses(uFieldFilter& filter, stringstream& sql, string& last_field);
     // string& get_last_table_name(uFieldFilter& filter);
     void get_last_table_name(uFieldFilter& filter, string& table_name);
-    Query(Db& db, sTable& t) : db(db), relative_to(t) {};
-    Query(Db& db, string& tn) : db(db), relative_to(db.tables[tn]) {};
+    Query(sDb db, sTable& t) : db(db), relative_to(t) {};
+    Query(sDb db, string& tn) : db(db), relative_to(db->tables[tn]) {};
     bool to_select_sql(stringstream& sql);
     void filter(const string& path, string value, int value_flags);
 
@@ -69,23 +69,24 @@ public:
     private:
         sqlite3_stmt *statement;
         int res;
-        Query& query;
+        Table& table;
+        sDb db;
     public:
         typedef iterator self_type;
         typedef std::forward_iterator_tag iterator_category;
         typedef int difference_type;
-        iterator(Query& q, int r) : query(q), statement(nullptr), res(r) {}
-        iterator(Query& q) : query(q), statement(nullptr) {
+        iterator(Query& q, int r) : table(*q.relative_to), db(q.db), statement(nullptr), res(r) {}
+        iterator(Query& q) : table(*q.relative_to), db(q.db), statement(nullptr) {
             stringstream sql;
-            if (!query.to_select_sql(sql))
+            if (!q.to_select_sql(sql))
                 res = SQLITE_DONE;
-            int rc = sqlite3_prepare(query.db.sql_db, sql.str().c_str(), -1, &statement, NULL);
+            int rc = sqlite3_prepare(q.db->sql_db, sql.str().c_str(), -1, &statement, NULL);
             if (rc != SQLITE_OK)
                 res = SQLITE_DONE;
 
             res = sqlite3_step(statement);
             if (res == SQLITE_ROW)
-                query.relative_to->update_fields_metadata(statement);
+                table.update_fields_metadata(statement);
         }
         ~iterator() {
             // if (statement != nullptr)
@@ -100,7 +101,7 @@ public:
             return *this;
         }
         Record operator*() {
-            return Record(query.db, *(query.relative_to), statement);
+            return Record(db, table, statement);
         }
         // Record operator->() { return Record(db, table, statement); }
         bool operator==(const self_type& rhs) {

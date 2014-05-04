@@ -169,7 +169,7 @@ bool Record::save() {
     } else if (!to_insert_sql(sql)) {
         return false;
     }
-    if (db.execute(sql.str(), "update/insert record"))
+    if (db->execute(sql.str(), "update/insert record"))
         return true;
     return false;
 }

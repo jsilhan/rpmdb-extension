@@ -63,12 +63,12 @@ public:
     unordered_map<string,string> values_to_insert;
     unordered_map<string,uvector<unique_ptr<Record>>> records_to_insert;
     Table& from_table;
-    Db& db;
-    Record(Db& db, Table& t) :
+    sDb db;
+    Record(sDb db, Table& t) :
         db(db), from_table(t), changed(false) {};
-    Record(Db& db, string& tn) :
-        db(db), from_table(*db.tables[tn]), changed(false) {};
-    Record(Db& db, Table& t, sqlite3_stmt* statement) :
+    Record(sDb db, string& tn) :
+        db(db), from_table(*db->tables[tn]), changed(false) {};
+    Record(sDb db, Table& t, sqlite3_stmt* statement) :
         db(db), from_table(t), changed(false) {
             for (int i = 0; i < sqlite3_column_count(statement); i++) {
                 ucell c(new cell(statement, i));
