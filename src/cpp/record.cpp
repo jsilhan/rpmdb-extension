@@ -123,14 +123,6 @@ bool Record::to_insert_sql(stringstream& sql) {
     return false;
 }
 
-int Record::last_id() {
-    stringstream sql;
-    sql << "select seq from sqlite_sequence where name='";
-    sql << from_table.name << "';";
-    // TODO execute
-    return 34;
-}
-
 void Record::insert_columns(stringstream& sql) {
     sql << "(";
     for (auto i = values_to_insert.begin(); i != values_to_insert.end(); i++) {

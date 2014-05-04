@@ -57,6 +57,13 @@ typedef unique_ptr<cell> ucell;
 class Record {
 private:
     FRIEND_TEST(RecordTest, TestRecordGet);
+    FRIEND_TEST(RecordTest, InsertSqlScript);
+    void insert_columns(stringstream& sql);
+    void insert_values(stringstream& sql);
+    bool to_insert_sql(stringstream& sql);
+    bool others_to_insert_sql(stringstream& sql);
+    bool self_to_insert_sql(stringstream& sql);
+    bool to_update_sql(stringstream& sql);
 public:
     sDb db;
     Table& from_table;
@@ -89,13 +96,6 @@ public:
     bool get(const string& key, string& value);
     bool get(const string& key, int& value);
     bool set(const string& table_alias, Record& record);
-    int last_id();
-    void insert_columns(stringstream& sql);
-    void insert_values(stringstream& sql);
-    bool to_insert_sql(stringstream& sql);
-    bool others_to_insert_sql(stringstream& sql);
-    bool self_to_insert_sql(stringstream& sql);
-    bool to_update_sql(stringstream& sql);
     bool save();
 };
 

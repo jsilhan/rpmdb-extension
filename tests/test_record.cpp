@@ -38,7 +38,7 @@ TEST_F(RecordTest, TestRecordGet) {
     EXPECT_EQ(3, i);
 }
 
-TEST(RecordTest2, InsertSqlScript) {
+TEST_F(RecordTest, InsertSqlScript) {
     string t1_name = "t1";
     uTable t(new Table(t1_name));
     t->add_field("t1f1", STRING);
