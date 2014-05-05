@@ -29,7 +29,6 @@ Swdb::Swdb(string path, pkg_type type) :
     // TODO actor params
     string pkg("pkgs");
     string repo("repos");
-    string extension("extensions");
     string pkg_change("pkg_changes");
     string group("groups");
     string transaction("transactions");
@@ -38,7 +37,6 @@ Swdb::Swdb(string path, pkg_type type) :
 
     sTable t_pkg(new Table(pkg));
     sTable t_repo(new Table(repo, true, true));
-    sTable t_extension(new Table(extension, false, true));
     sTable t_pkg_change(new Table(pkg_change, true));
     sTable t_group(new Table(group, false, true));
     sTable t_transaction(new Table(transaction, true));
@@ -47,7 +45,6 @@ Swdb::Swdb(string path, pkg_type type) :
 
     db->tables[pkg] = t_pkg;
     db->tables[repo] = t_repo;
-    db->tables[extension] = t_extension;
     db->tables[pkg_change] = t_pkg_change;
     db->tables[group] = t_group;
     db->tables[transaction] = t_transaction;
@@ -60,8 +57,6 @@ Swdb::Swdb(string path, pkg_type type) :
     t_repo->add_field("last_synced", INT);
     t_repo->add_field("is_expired", INT);
 
-    db->add_many_to_one(t_extension, t_pkg);
-    db->add_many_to_one(t_extension, t_repo);
 
     t_pkg_change->add_field("reason", INT);
     t_pkg_change->add_field("done", INT);
