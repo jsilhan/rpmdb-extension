@@ -25,8 +25,7 @@ using std::move;
 using std::vector;
 
 
-class Db {
-public:
+struct Db {
     string path;
     sqlite3 *sql_db;
     bool initialized;

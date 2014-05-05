@@ -32,21 +32,25 @@ bool Record::is_changed() {
 };
 
 bool Record::set(const string& key, const string& value) {
-    if (!from_table.field_valid(key, STRING))
+    if (!from_table.is_new_field_valid(key, STRING))
         return false;
     values_to_insert[key] = value;
     return true;
 };
 
 bool Record::set(const string& key, int value) {
-    if (!from_table.field_valid(key, INT))
+    if (!from_table.is_new_field_valid(key, INT))
         return false;
     values_to_insert[key] = to_string(value);
     return true;
 };
 
 bool Record::set(const string& key, uvector<uRecord> records) {
-    if (!from_table.field_valid(key, INT))
+    if (!from_table.is_new_field_valid(key, INT))
+        return false;
+    // cannot add records to non-existing relation
+    unsigned long unused;
+    if (from_table.neightbor_tables.count(key) == 0)
         return false;
     // TODO check if neighbor and valid cardinality
     if (records_to_insert.count(key) > 0)
@@ -56,7 +60,7 @@ bool Record::set(const string& key, uvector<uRecord> records) {
 };
 
 bool Record::append(const string& key, uRecord record) {
-    if (!from_table.field_valid(key, INT))
+    if (!from_table.is_new_field_valid(key, INT))
         return false;
     // TODO check if neighbor and valid cardinality
     if (records_to_insert.count(key) > 0)

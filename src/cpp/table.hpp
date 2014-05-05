@@ -47,8 +47,7 @@ struct ReservedField {
 
 // typedef unique_ptr<ReservedField> uReservedField;
 
-class Table {
-public:
+struct Table {
     string name;
     bool protect;
     bool extensible;
@@ -60,7 +59,9 @@ public:
     void add_field(string table_name, field_flags flags, bool required=false);
     bool table_ref_name(Table& t, string& table_name);
     bool with_neighbor_by_alias(const string& table_alias, function<void(Table&)> fnc);
-    bool field_valid(const string& name, field_flags type);
+    bool is_new_field_valid(const string& name, field_flags type);
+    bool is_field_in_db_or_extensible(const string& name);
+    bool is_valid_field_name(const string& name);
     bool to_init_sql(stringstream& sql);
     bool get_cell_index(const string& key, unsigned long& i);
     void update_fields_metadata(sqlite3_stmt* statement);
