@@ -9,7 +9,10 @@ INCLUDE(FindSqlite3)
 INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
 TARGET_LINK_LIBRARIES(libswdb ${SQLITE3_LIBRARIES})
 
-file(GLOB swdb_headers ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
+set(swdb_headers
+    swdb.hpp
+    record.hpp
+    query.hpp)
 
 IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
   SET (LIB_SUFFIX "64")
