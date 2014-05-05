@@ -62,12 +62,14 @@ private:
     vector<ucell> values_from_db;
     unordered_map<string,string> values_to_insert;
     unordered_map<string,uvector<unique_ptr<Record>>> records_to_insert;
+    map<string,field_flags> fields_to_append;
     void insert_columns(stringstream& sql);
     void insert_values(stringstream& sql);
     bool to_insert_sql(stringstream& sql);
     bool others_to_insert_sql(stringstream& sql);
     bool self_to_insert_sql(stringstream& sql);
     bool to_update_sql(stringstream& sql);
+    bool could_be_added(const string& key, field_flags type);
     FRIEND_TEST(RecordTest, TestRecordGet);
     FRIEND_TEST(RecordTest, InsertSqlScript);
 public:

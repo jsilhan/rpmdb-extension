@@ -29,8 +29,6 @@ using std::get;
 bool Table::is_new_field_valid(const string& name, field_flags type) {
     if (!is_valid_field_name(name))
         return false;
-    if (!is_field_in_db_or_extensible(name))
-        return false;
     // key exist in table with different type
     if (fields_from_db[name] != type)
         return false;
@@ -42,14 +40,6 @@ bool Table::is_valid_field_name(const string& name) {
         if (!isalnum(c))
             return false;
     }
-    return true;
-}
-
-bool Table::is_field_in_db_or_extensible(const string& name) {
-    // can create new fields only for extensible tables
-    if (fields_from_db.count(name) == 0 &&
-        !extensible)
-        return false;
     return true;
 }
 

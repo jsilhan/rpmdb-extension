@@ -37,13 +37,13 @@ Swdb::Swdb(string path, pkg_type type) :
     string trans_output("trans_outputs");
 
     sTable t_pkg(new Table(pkg));
-    sTable t_repo(new Table(repo));
-    sTable t_extension(new Table(extension));
-    sTable t_pkg_change(new Table(pkg_change));
-    sTable t_group(new Table(group));
-    sTable t_transaction(new Table(transaction));
-    sTable t_actors(new Table(actors));
-    sTable t_trans_output(new Table(trans_output));
+    sTable t_repo(new Table(repo, true, true));
+    sTable t_extension(new Table(extension, false, true));
+    sTable t_pkg_change(new Table(pkg_change, true));
+    sTable t_group(new Table(group, false, true));
+    sTable t_transaction(new Table(transaction, true));
+    sTable t_actors(new Table(actors, true));
+    sTable t_trans_output(new Table(trans_output, true));
 
     db->tables[pkg] = t_pkg;
     db->tables[repo] = t_repo;

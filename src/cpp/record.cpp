@@ -31,15 +31,25 @@ bool Record::is_changed() {
     return changed;
 };
 
+bool Record::could_be_added(const string& name, field_flags type) {
+    if (!from_table.is_new_field_valid(name, type))
+        return false;
+    if (from_table.fields_from_db.count(name) == 0)
+        if (!from_table.extensible)
+            return false;
+    fields_to_append[name] = type;
+    return true;
+}
+
 bool Record::set(const string& key, const string& value) {
-    if (!from_table.is_new_field_valid(key, STRING))
+    if (!could_be_added(key, STRING))
         return false;
     values_to_insert[key] = value;
     return true;
 };
 
 bool Record::set(const string& key, int value) {
-    if (!from_table.is_new_field_valid(key, INT))
+    if (!could_be_added(key, INT))
         return false;
     values_to_insert[key] = to_string(value);
     return true;
@@ -164,6 +174,9 @@ bool Record::save() {
             return false;
     } else if (!to_insert_sql(sql)) {
         return false;
+    }
+    for (auto kv : fields_to_append) {
+        db->add_column(from_table, kv.first, kv.second);
     }
     if (db->execute(sql.str(), "update/insert record"))
         return true;
