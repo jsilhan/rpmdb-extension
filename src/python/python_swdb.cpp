@@ -1,34 +1,16 @@
 #include <string>
-#include <sstream>
-
-class SomeClass
-{
-public:
-    SomeClass(std::string n) : name(n), mNumber(0.0) {}
-
-    std::string name;
-
-    double getNumber() const { return mNumber; }
-    void setNumber(double n)
-    { 
-        if (n>3.141592654)
-            n = -1;
-        mNumber = n; 
-    }
-
-private:
-    double mNumber;
-};
-
+#include "../cpp/swdb.hpp"
+// #include "../cpp/swdb.hpp"
+// #include "../cpp/swdb.hpp"
 
 #include <boost/python.hpp>
 using namespace boost::python;
 
 BOOST_PYTHON_MODULE(swdb)
 {
-    class_<SomeClass>("SomeClass", init<std::string>())
-        .def_readwrite("name", & SomeClass::name)
-        .add_property("number", &SomeClass::getNumber, &SomeClass::setNumber)
+    class_<Swdb>("Swdb", init<std::string, int>())
+        .def("init", &Swdb::init)
+        // .def_readwrite("name", & SomeClass::name)
+        // .add_property("number", &SomeClass::getNumber, &SomeClass::setNumber)
     ;
-
 }

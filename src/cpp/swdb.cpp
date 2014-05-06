@@ -23,8 +23,8 @@ using std::unique_ptr;
 using std::move;
 using std::vector;
 
-Swdb::Swdb(string path, pkg_type type) :
-    default_pkg_type(type) {
+Swdb::Swdb(string path, int type) :
+    default_pkg_type((pkg_type) type) {
     db = make_shared<Db>(path);
     // TODO actor params
     string pkg("pkgs");

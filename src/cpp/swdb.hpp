@@ -27,11 +27,12 @@ using std::vector;
 
 
 class Swdb {
-public:
+private:
     sDb db;
-    vector<ustring> actors;
+    // vector<ustring> actors;
     pkg_type default_pkg_type;
-    Swdb(string path="test.db", pkg_type type=RPM_PKG);
+public:
+    Swdb(string path="test.db", int type=RPM_PKG);
     bool init();
     uRecord record(string table_name);
     uQuery query(string table_name);
