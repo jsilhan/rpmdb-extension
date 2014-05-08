@@ -25,15 +25,15 @@ using std::vector;
 int comparator_mask = 0x0f;
 
 void Query::filter(const string& path, string value, int value_flags) {
-    uFieldFilter filter(new FieldFilter);
+    FieldFilter filter;
     assert(!path.empty());
-    filter->value_flags = value_flags;
-    filter->value = value;
-    split(path, '.', filter->path);
+    filter.value_flags = value_flags;
+    filter.value = value;
+    split(path, '.', filter.path);
     filters.push_back(move(filter));
 }
 
-bool Query::add_where_clauses(uFieldFilter& filter, stringstream& sql,
+bool Query::add_where_clauses(FieldFilter& filter, stringstream& sql,
     string& last_table) {
 
     sql << "WHERE ";
@@ -41,9 +41,9 @@ bool Query::add_where_clauses(uFieldFilter& filter, stringstream& sql,
     for (auto i = filters.begin(); i != filters.end(); i++) {
         if (i != filters.begin())
             sql << ", ";
-        vector<string>& path = (*i)->path;
+        vector<string>& path = i->path;
         sql << last_table << "." << path.at(path.size() - 1);
-        sql << " = '" << (*i)->value << "'";
+        sql << " = '" << i->value << "'";
         // TODO consider flags
     }
     return true;
@@ -125,9 +125,9 @@ bool Query::to_select_sql(stringstream& sql) {
     stringstream join_clauses;
     stringstream where_clause;
 
-    for (uFieldFilter& filter : filters) {
+    for (FieldFilter& filter : filters) {
         string last_table;
-        if (!add_join_clauses(filter->path, join_clauses, last_table) ||
+        if (!add_join_clauses(filter.path, join_clauses, last_table) ||
             !add_where_clauses(filter, where_clause, last_table))
             return false;
     }

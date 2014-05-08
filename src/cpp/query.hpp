@@ -47,19 +47,17 @@ struct FieldFilter {
     int value_flags;
 };
 
-typedef unique_ptr<FieldFilter> uFieldFilter;
-
 class Query {
 public:
     sDb db;
     sTable relative_to;
-    vector<uFieldFilter> filters;
+    vector<FieldFilter> filters;
     bool add_select_clause(stringstream& sql);
     bool add_join_clauses(vector<string>& path, stringstream& sql, string& last_field);
     bool add_join_clause(sTable& t, string& table_alias, string& last_table_name, stringstream& sql);
-    bool add_where_clauses(uFieldFilter& filter, stringstream& sql, string& last_field);
-    // string& get_last_table_name(uFieldFilter& filter);
-    void get_last_table_name(uFieldFilter& filter, string& table_name);
+    bool add_where_clauses(FieldFilter& filter, stringstream& sql, string& last_field);
+    // string& get_last_table_name(FieldFilter& filter);
+    void get_last_table_name(FieldFilter& filter, string& table_name);
     Query(sDb db, sTable& t) : db(db), relative_to(t) {};
     Query(sDb db, string& tn) : db(db), relative_to(db->tables[tn]) {};
     bool to_select_sql(stringstream& sql);
