@@ -18,11 +18,11 @@ using std::unique_ptr;
 using std::move;
 using std::vector;
 
-void split(const string& s, char delim, vector<ustring>& elems) {
+void split(const string& s, char delim, vector<string>& elems) {
     stringstream ss(s);
     while (1) {
-        ustring item(new string);
-        if (!getline(ss, *item, delim))
+        string item;
+        if (!getline(ss, item, delim))
             break;
         elems.push_back(move(item));
     }

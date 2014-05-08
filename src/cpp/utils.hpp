@@ -23,8 +23,6 @@ using std::vector;
 using std::make_shared;
 
 
-typedef unique_ptr<string> ustring;
-
-void split(const string& s, char delim, vector<ustring>& elems);
+void split(const string& s, char delim, vector<string>& elems);
 
 #endif

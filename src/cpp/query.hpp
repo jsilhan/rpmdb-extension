@@ -42,7 +42,7 @@ enum value_flag {
 };
 
 struct FieldFilter {
-    vector<ustring> path;
+    vector<string> path;
     string value;
     int value_flags;
 };
@@ -55,7 +55,7 @@ public:
     sTable relative_to;
     vector<uFieldFilter> filters;
     bool add_select_clause(stringstream& sql);
-    bool add_join_clauses(vector<ustring>& path, stringstream& sql, string& last_field);
+    bool add_join_clauses(vector<string>& path, stringstream& sql, string& last_field);
     bool add_join_clause(sTable& t, string& table_alias, string& last_table_name, stringstream& sql);
     bool add_where_clauses(uFieldFilter& filter, stringstream& sql, string& last_field);
     // string& get_last_table_name(uFieldFilter& filter);

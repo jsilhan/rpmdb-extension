@@ -41,8 +41,8 @@ bool Query::add_where_clauses(uFieldFilter& filter, stringstream& sql,
     for (auto i = filters.begin(); i != filters.end(); i++) {
         if (i != filters.begin())
             sql << ", ";
-        vector<ustring>& path = (*i)->path;
-        sql << last_table << "." << *(path.at(path.size() - 1));
+        vector<string>& path = (*i)->path;
+        sql << last_table << "." << path.at(path.size() - 1);
         sql << " = '" << (*i)->value << "'";
         // TODO consider flags
     }
@@ -74,11 +74,11 @@ bool Query::add_join_clause(sTable& t, string& table_alias, string& last_field, 
     return ret;
 }
 
-bool Query::add_join_clauses(vector<ustring>& path, stringstream& sql, string& last_table_name) {
+bool Query::add_join_clauses(vector<string>& path, stringstream& sql, string& last_table_name) {
     sTable &first_table = relative_to;
     last_table_name = relative_to->name;
     for (unsigned long i = 0; i < path.size() - 1; i++) {
-        string& current_field = *path.at(i);
+        string& current_field = path.at(i);
         bool success_join = add_join_clause(first_table, current_field, last_table_name, sql);
         if (!success_join || first_table->neightbor_tables.count(current_field) == 0)
             return false;
