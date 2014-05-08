@@ -27,9 +27,15 @@ BOOST_PYTHON_MODULE(swdb)
         .def("append", &Record::append)
     ;
 
+    class_<Query>("Query", no_init)
+        .def("filter", &Query::filter)
+        // .def("__iter__", range(&Query::begin, &Query::end))
+    ;
+
     class_<Swdb>("Swdb", init<std::string, int>())
         .def("init", &Swdb::init)
         .def("record", &Swdb::record)
+        .def("query", &Swdb::query)
         // .def_readwrite("name", & SomeClass::name)
         // .add_property("number", &SomeClass::getNumber, &SomeClass::setNumber)
     ;

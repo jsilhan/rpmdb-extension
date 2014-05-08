@@ -71,6 +71,9 @@ public:
         int res;
     public:
         typedef iterator self_type;
+        typedef Record value_type;
+        typedef Record& reference;
+        typedef Record* pointer;
         typedef std::forward_iterator_tag iterator_category;
         typedef int difference_type;
         iterator(Query& q, int r) : db(q.db), table(*q.relative_to), statement(nullptr), res(r) {}

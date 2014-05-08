@@ -37,6 +37,7 @@ public:
     uRecord urecord(string table_name);
     Record record(string table_name);
     uQuery uquery(string table_name);
+    Query query(string table_name);
 };
 
 #endif
