@@ -52,14 +52,12 @@ struct cell {
     }
 };
 
-typedef unique_ptr<cell> ucell;
-
 class Record {
 private:
     sDb db;
     Table& from_table;
     bool changed;
-    vector<ucell> values_from_db;
+    vector<cell> values_from_db;
     unordered_map<string,string> values_to_insert;
     unordered_map<string,uvector<unique_ptr<Record>>> records_to_insert;
     map<string,field_flags> fields_to_append;
@@ -80,8 +78,7 @@ public:
     Record(sDb db, Table& t, sqlite3_stmt* statement) :
         db(db), from_table(t), changed(false) {
             for (int i = 0; i < sqlite3_column_count(statement); i++) {
-                ucell c(new cell(statement, i));
-                values_from_db.push_back(move(c));
+                values_from_db.push_back(cell(statement, i));
             }
         };
     bool is_in_db();
@@ -89,7 +86,7 @@ public:
     int id() {
         if (values_from_db.empty())
             return -1;
-        return values_from_db[0]->number;
+        return values_from_db[0].number;
     }
     bool set(const string& key, const string& value);
     bool set(const string& key, int value);

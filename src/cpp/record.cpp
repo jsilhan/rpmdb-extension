@@ -63,8 +63,8 @@ bool Record::set(const string& key, uvector<uRecord> records) {
     if (from_table.neightbor_tables.count(key) == 0)
         return false;
     // TODO check if neighbor and valid cardinality
-    if (records_to_insert.count(key) > 0)
-        delete records_to_insert[key].release();
+    // if (records_to_insert.count(key) > 0)
+    //     delete records_to_insert[key].release();
     records_to_insert[key] = move(records);
     return true;
 };
@@ -85,10 +85,10 @@ bool Record::get(const string& key, int& value) {
         return false;
     if (i >= values_from_db.size())
         return false;
-    ucell& r = values_from_db[i];
-    if (r->type != INT)
+    cell& r = values_from_db[i];
+    if (r.type != INT)
         return false;
-    value = r->number;
+    value = r.number;
     return true;
 };
 
@@ -96,9 +96,9 @@ bool Record::get(const string& key, string& value) {
     unsigned long i;
     if (!from_table.get_cell_index(key, i))
         return false;
-    if (values_from_db[i]->type != STRING)
+    if (values_from_db[i].type != STRING)
         return false;
-    value = values_from_db[i]->text;
+    value = values_from_db[i].text;
     return true;
 };
 

@@ -23,12 +23,9 @@ TEST_F(RecordTest, TestRecordGet) {
     sDb db(new Db("unused.db"));
     db->tables[t->name] = move(t);
     Record r1(db, t1_name);
-    ucell c1(new cell(INT, 1));
-    ucell c2(new cell(STRING, "pkg_name_xxx"));
-    ucell c3(new cell(INT, 3));
-    r1.values_from_db.push_back(move(c1));
-    r1.values_from_db.push_back(move(c2));
-    r1.values_from_db.push_back(move(c3));
+    r1.values_from_db.push_back(cell(INT, 1));
+    r1.values_from_db.push_back(cell(STRING, "pkg_name_xxx"));
+    r1.values_from_db.push_back(cell(INT, 3));
     string s;
     int i;
     EXPECT_TRUE(r1.get("name", s));
