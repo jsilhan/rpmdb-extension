@@ -94,7 +94,6 @@ public:
     bool append(const string& key, Record record);
     bool get(const string& key, string& value);
     bool get(const string& key, int& value);
-    bool set(const string& table_alias, Record& record);
     bool save();
 };
 

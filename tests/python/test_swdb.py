@@ -8,8 +8,6 @@ class SubjectRealPossibilitiesTest(unittest.TestCase):
         pass
 
     def test_basic(self):
-        m1 = swdb.Swdb("Pavel", 3)
-        print "### WORKS!"
-
-        m1.number = 7.3
-        print "number =", m1.number
+        s = swdb.Swdb("location.db", 3)
+        rec = s.record("pkgs")
+        self.assertTrue(rec.set("type", 3))

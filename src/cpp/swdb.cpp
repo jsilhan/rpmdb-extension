@@ -90,6 +90,10 @@ uRecord Swdb::urecord(string table_name) {
     return uRecord(new Record(db, table_name));
 }
 
+Record Swdb::record(string table_name) {
+    return Record(db, table_name);
+}
+
 uQuery Swdb::uquery(string table_name) {
     return uQuery(new Query(db, table_name));
 }
