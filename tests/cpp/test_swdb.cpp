@@ -17,7 +17,7 @@ public:
 // TEST(RealSqlTest, QueryInit) {
 //     Swdb swdb("test.db");
 //     EXPECT_TRUE(swdb.init());
-//     uRecord pkg1 = swdb.record("pkgs");
+//     uRecord pkg1 = swdb.urecord("pkgs");
 //     pkg1->set("name", "xxx.noarch");
 //     EXPECT_TRUE(pkg1->save());
 
@@ -35,7 +35,7 @@ public:
 TEST_F(SwdbTest, StoreRecords) {
     Swdb swdb("test.db");
     EXPECT_TRUE(swdb.init());
-    uRecord pkg1 = swdb.record("pkgs");
+    uRecord pkg1 = swdb.urecord("pkgs");
     pkg1->set("name", "xxx.noarch");
     EXPECT_TRUE(pkg1->save());
 

@@ -34,7 +34,7 @@ private:
 public:
     Swdb(string path="test.db", int type=RPM_PKG);
     bool init();
-    uRecord record(string table_name);
+    uRecord urecord(string table_name);
     uQuery uquery(string table_name);
 };
 

@@ -55,7 +55,7 @@ bool Record::set(const string& key, int value) {
     return true;
 };
 
-bool Record::set(const string& key, vector<uRecord> records) {
+bool Record::set(const string& key, vector<Record> records) {
     if (!from_table.is_new_field_valid(key, INT))
         return false;
     // cannot add records to non-existing relation
@@ -69,7 +69,7 @@ bool Record::set(const string& key, vector<uRecord> records) {
     return true;
 };
 
-bool Record::append(const string& key, uRecord record) {
+bool Record::append(const string& key, Record record) {
     if (!from_table.is_new_field_valid(key, INT))
         return false;
     // TODO check if neighbor and valid cardinality
@@ -118,9 +118,9 @@ bool Record::to_update_sql(stringstream& sql) {
 
 bool Record::others_to_insert_sql(stringstream& sql) {
     for (auto& kv : records_to_insert) {
-        vector<uRecord>& records = kv.second;
-        for (uRecord& r : records) {
-            if (r->is_in_db())
+        vector<Record>& records = kv.second;
+        for (Record& r : records) {
+            if (r.is_in_db())
                 return false;
             // if (!r->set_fk(this) || !r->to_insert_sql(sql))
             //     return false;

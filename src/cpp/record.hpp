@@ -59,7 +59,7 @@ private:
     bool changed;
     vector<cell> values_from_db;
     unordered_map<string,string> values_to_insert;
-    unordered_map<string,vector<unique_ptr<Record>>> records_to_insert;
+    unordered_map<string,vector<Record>> records_to_insert;
     map<string,field_flags> fields_to_append;
     void insert_columns(stringstream& sql);
     void insert_values(stringstream& sql);
@@ -90,8 +90,8 @@ public:
     }
     bool set(const string& key, const string& value);
     bool set(const string& key, int value);
-    bool set(const string& key, vector<unique_ptr<Record>> records);
-    bool append(const string& key, unique_ptr<Record> record);
+    bool set(const string& key, vector<Record> records);
+    bool append(const string& key, Record record);
     bool get(const string& key, string& value);
     bool get(const string& key, int& value);
     bool set(const string& table_alias, Record& record);

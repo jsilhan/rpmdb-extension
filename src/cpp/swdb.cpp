@@ -86,7 +86,7 @@ bool Swdb::init() {
     return db->init();
 }
 
-uRecord Swdb::record(string table_name) {
+uRecord Swdb::urecord(string table_name) {
     return uRecord(new Record(db, table_name));
 }
 
