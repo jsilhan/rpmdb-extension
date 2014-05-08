@@ -21,7 +21,7 @@ public:
 //     pkg1->set("name", "xxx.noarch");
 //     EXPECT_TRUE(pkg1->save());
 
-//     uQuery q = swdb.query("pkgs");
+//     uQuery q = swdb.uquery("pkgs");
 //     q->filter("name", "lib-1-x.noarch", EQ);
 
 //     q->iter([&](Record& r) {
@@ -39,7 +39,7 @@ TEST_F(SwdbTest, StoreRecords) {
     pkg1->set("name", "xxx.noarch");
     EXPECT_TRUE(pkg1->save());
 
-    uQuery q = swdb.query("pkgs");
+    uQuery q = swdb.uquery("pkgs");
     q->filter("name", "xxx.noarch", EQ);
 
     // string name;
