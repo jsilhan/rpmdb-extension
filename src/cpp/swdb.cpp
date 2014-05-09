@@ -50,13 +50,14 @@ Swdb::Swdb(string path, int type) :
     db->tables[transaction] = t_transaction;
     db->tables[trans_output] = t_trans_output;
     
-    t_pkg->add_field("name", STRING);
+    string pkg_name = "name";
+    t_pkg->add_field(pkg_name, STRING);
     t_pkg->add_field("type", INT);
+    // swdb.create_index(string("pkgs"), string("name"), true) // FIXME
 
     t_repo->add_field("name", STRING);
     t_repo->add_field("last_synced", INT);
     t_repo->add_field("is_expired", INT);
-
 
     t_pkg_change->add_field("reason", INT);
     t_pkg_change->add_field("done", INT);
@@ -100,4 +101,13 @@ uQuery Swdb::uquery(string table_name) {
 
 Query Swdb::query(string table_name) {
     return Query(db, table_name);
+}
+
+bool Swdb::create_index(const string& table_name, const string& field_name, bool unique) {
+    stringstream sql;
+    sql << "CREATE INDEX IF NOT EXISTS `idx_" << field_name << "` ON `";
+    sql << table_name << "`(`" << field_name << "`);";
+    if (db->execute(sql.str(), "create index on record"))
+        return true;
+    return false;
 }

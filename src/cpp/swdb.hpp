@@ -38,6 +38,7 @@ public:
     Record record(string table_name);
     uQuery uquery(string table_name);
     Query query(string table_name);
+    bool create_index(const string& table_name, const string& field_name, bool unique=false);
 };
 
 #endif
