@@ -22,6 +22,7 @@ TEST_F(RecordTest, TestRecordGet) {
     t->add_field("type", INT);
     sDb db(new Db("unused.db"));
     db->tables[t->name] = move(t);
+    EXPECT_THROW(Record(db, "unknown"), std::out_of_range);
     Record r1(db, t1_name);
     r1.values_from_db.push_back(cell(INT, 1));
     r1.values_from_db.push_back(cell(STRING, "pkg_name_xxx"));

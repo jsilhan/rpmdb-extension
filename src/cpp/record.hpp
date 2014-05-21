@@ -74,7 +74,9 @@ public:
     Record(sDb db, Table& t) :
         db(db), from_table(t), changed(false) {};
     Record(sDb db, string& tn) :
-        db(db), from_table(*db->tables[tn]), changed(false) {};
+        db(db), from_table(*db->tables.at(tn)), changed(false) {};
+    Record(sDb db, string&& tn) :
+        db(db), from_table(*db->tables.at(tn)), changed(false) {};
     Record(sDb db, Table& t, sqlite3_stmt* statement) :
         db(db), from_table(t), changed(false) {
             for (int i = 0; i < sqlite3_column_count(statement); i++) {
