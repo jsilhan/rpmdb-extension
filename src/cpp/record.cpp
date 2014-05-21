@@ -34,9 +34,10 @@ bool Record::is_changed() {
 bool Record::could_be_added(const string& name, field_flags type) {
     if (!from_table.is_new_field_valid(name, type))
         return false;
-    if (from_table.fields_from_db.count(name) == 0)
-        if (!from_table.extensible)
-            return false;
+    if (from_table.fields_from_db.count(name) > 0)
+        return true;
+    if (!from_table.extensible)
+        return false;
     fields_to_append[name] = type;
     return true;
 }
@@ -166,7 +167,6 @@ bool Record::self_to_insert_sql(stringstream& sql) {
 
 bool Record::save() {
     stringstream sql;
-    // setup savepoint
     if (is_in_db()) {
         if (from_table.protect || !to_update_sql(sql))
             return false;
