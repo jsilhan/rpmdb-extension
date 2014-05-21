@@ -59,7 +59,8 @@ public:
     // string& get_last_table_name(FieldFilter& filter);
     void get_last_table_name(FieldFilter& filter, string& table_name);
     Query(sDb db, sTable& t) : db(db), relative_to(t) {};
-    Query(sDb db, string& tn) : db(db), relative_to(db->tables[tn]) {};
+    Query(sDb db, string& tn) : db(db), relative_to(db->tables.at(tn)) {};
+    Query(sDb db, string&& tn) : db(db), relative_to(db->tables.at(tn)) {};
     bool to_select_sql(stringstream& sql);
     void filter(const string& path, string value, int value_flags);
 

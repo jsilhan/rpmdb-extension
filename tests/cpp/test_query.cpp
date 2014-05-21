@@ -46,6 +46,7 @@ TEST_F(QueryTest, SelectSqlScript) {
     EXPECT_TRUE(db->tables.count("t2") > 0);
     db->add_many_to_one(t1, t2);
     Query q(db, t1_name);
+    EXPECT_THROW(Query(db, "unknown"), std::out_of_range);
     q.filter("t2.t2f1", "val", EQ);
     stringstream sql;
     EXPECT_TRUE(q.to_select_sql(sql));
