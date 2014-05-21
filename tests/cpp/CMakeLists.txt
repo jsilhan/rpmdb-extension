@@ -6,3 +6,7 @@ add_executable(test_main ${swdb_tests})
 
 target_link_libraries(test_main libswdb ${GTEST_LIBRARIES} pthread)
 add_test(test_main test_main " --gtest_color=yes --gtest_break_on_failure")
+
+
+add_executable(benchmark_read benchmark_read.cpp)
+target_link_libraries(benchmark_read libswdb pthread)

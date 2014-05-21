@@ -105,7 +105,10 @@ Query Swdb::query(string table_name) {
 
 bool Swdb::create_index(const string& table_name, const string& field_name, bool unique) {
     stringstream sql;
-    sql << "CREATE INDEX IF NOT EXISTS `idx_" << field_name << "` ON `";
+    sql << "CREATE ";
+    if (unique)
+        sql << "UNIQUE ";
+    sql << "INDEX IF NOT EXISTS `idx_" << field_name << "` ON `";
     sql << table_name << "`(`" << field_name << "`);";
     if (db->execute(sql.str(), "create index on record"))
         return true;

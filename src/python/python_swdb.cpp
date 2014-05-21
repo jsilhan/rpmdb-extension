@@ -7,6 +7,10 @@
 using namespace boost::python;
 
 
+void translator(std::out_of_range const& x) {
+    PyErr_SetString(PyExc_IndexError, "Rows out of range");
+}
+
 BOOST_PYTHON_MODULE(swdb)
 {
     bool (Record::*set_int)(const string&, int) = &Record::set;
@@ -30,6 +34,7 @@ BOOST_PYTHON_MODULE(swdb)
     class_<Query>("Query", no_init)
         .def("filter", &Query::filter)
         // .def("__iter__", range(&Query::begin, &Query::end))
+        // .def("__iter__", iterator<Query>())
     ;
 
     class_<Swdb>("Swdb", init<std::string, int>())

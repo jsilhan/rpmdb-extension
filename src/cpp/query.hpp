@@ -63,18 +63,29 @@ public:
     bool to_select_sql(stringstream& sql);
     void filter(const string& path, string value, int value_flags);
 
-    class iterator {
+    Record operator[](int idx) {
+        auto it = this->begin();
+        for (int i = 0; i < idx; ++i) {
+            if (it == this->end())
+                throw std::out_of_range("doesn't have that many rows");
+            it++;    
+        }
+        return *it;
+    }
+
+    class iterator : public std::iterator<std::input_iterator_tag, Record> {
     private:
         sDb db;
         Table& table;
         sqlite3_stmt *statement;
         int res;
     public:
-        typedef iterator self_type;
         typedef Record value_type;
         typedef Record& reference;
         typedef Record* pointer;
-        typedef std::forward_iterator_tag iterator_category;
+        typedef Record result_type;
+        typedef iterator self_type;
+        typedef std::input_iterator_tag iterator_category;
         typedef int difference_type;
         iterator(Query& q, int r) : db(q.db), table(*q.relative_to), statement(nullptr), res(r) {}
         iterator(Query& q) : db(q.db), table(*q.relative_to), statement(nullptr) {
