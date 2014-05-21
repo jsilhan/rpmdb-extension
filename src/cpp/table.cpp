@@ -30,7 +30,7 @@ bool Table::is_new_field_valid(const string& name, field_flags type) {
     if (!is_valid_field_name(name))
         return false;
     // key exist in table with different type
-    if (fields_from_db[name] != type)
+    if (fields_from_db.count(name) > 0 && fields_from_db[name] != type)
         return false;
     return true;
 }

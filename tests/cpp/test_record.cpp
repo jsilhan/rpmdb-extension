@@ -10,9 +10,6 @@ const string UPDATE_SCRIPT = "UPDATE t1 SET t1f3='bla', t1f2='3' "
     "WHERE id='-1';";
 
 class RecordTest : public ::testing::Test {
-// protected:
-//     virtual void SetUp() {
-//     }
 };
 
 TEST_F(RecordTest, TestRecordGet) {
@@ -45,14 +42,31 @@ TEST_F(RecordTest, InsertSqlScript) {
     sDb db(new Db("unused.db"));
     db->tables[t->name] = move(t);
     Record r(db, t1_name);
-    r.set("t1f2", 3);
-    r.set("t1f3", "bla");
+    EXPECT_TRUE(r.set("t1f2", 3));
+    EXPECT_TRUE(r.set("t1f3", "bla"));
+
+    // no new column will be added
+    EXPECT_EQ(0, r.fields_to_append.size());
+
     stringstream insert_sql;
     EXPECT_TRUE(r.to_insert_sql(insert_sql));
     EXPECT_EQ(INSERT_SCRIPT, insert_sql.str());
     stringstream update_sql;
     EXPECT_TRUE(r.to_update_sql(update_sql));
     EXPECT_EQ(UPDATE_SCRIPT, update_sql.str());
+
+    // table not extensible
+    EXPECT_FALSE(r.set("new", 333));
+    uTable t_extensible(new Table("extensible", false, true));
+    db->tables["extensible"] = move(t_extensible);
+    Record re(db, "extensible");
+    EXPECT_TRUE(re.set("new", 333));
+    EXPECT_EQ(1, re.fields_to_append.size());
+    EXPECT_EQ("new", re.fields_to_append.begin()->first);
+}
+
+TEST_F(RecordTest, NewColumns) {
+
 }
 
 // test required fields
