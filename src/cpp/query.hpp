@@ -27,20 +27,6 @@ using std::move;
 using std::stoi;
 using std::vector;
 
-extern int comparator_mask;
-enum comparator_flags {
-    EQ = 0,
-    NEQ = 1,
-    GT = 2,
-    GTE = 3,
-    LTE = 4,
-    LT = 5,
-};
-
-enum value_flag {
-    ICASE = 1 << 8,
-};
-
 struct FieldFilter {
     vector<string> path;
     string value;
@@ -49,6 +35,16 @@ struct FieldFilter {
 
 class Query {
 public:
+    enum comparator_flags {
+        EQ = 0,
+        NEQ = 1,
+        GT = 2,
+        GTE = 3,
+        LTE = 4,
+        LT = 5,
+        ICASE = 1 << 8,
+    };
+    
     sDb db;
     sTable relative_to;
     vector<FieldFilter> filters;
@@ -56,7 +52,6 @@ public:
     bool add_join_clauses(vector<string>& path, stringstream& sql, string& last_field);
     bool add_join_clause(sTable& t, string& table_alias, string& last_table_name, stringstream& sql);
     bool add_where_clauses(FieldFilter& filter, stringstream& sql, string& last_field);
-    // string& get_last_table_name(FieldFilter& filter);
     void get_last_table_name(FieldFilter& filter, string& table_name);
     Query(sDb db, sTable& t) : db(db), relative_to(t) {};
     Query(sDb db, string& tn) : db(db), relative_to(db->tables.at(tn)) {};
@@ -103,7 +98,7 @@ public:
         }
         ~iterator() {
             // if (statement != nullptr)
-            //     sqlite3_finalize(statement);
+            //     sqlite3_finalize(statement); // FIXME
         }
         self_type operator++() {
             res = sqlite3_step(statement);

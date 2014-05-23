@@ -35,7 +35,7 @@ enum field_flags {
     RELATION = 3,
     NULL_VAL = 4,
     APPENDED = 5,
-    // REQUIRED = 1 << 8,
+    REQUIRED = 1 << 8,
 };
 
 struct ReservedField {
@@ -45,13 +45,10 @@ struct ReservedField {
     string description;
 };
 
-// typedef unique_ptr<ReservedField> uReservedField;
-
 struct Table {
     string name;
     bool protect;
     bool extensible;
-    // vector<uReservedField> reserved_fields;
     map<string,field_flags> fields_from_db;
     map<string,weak_ptr<Table>> neightbor_tables;
     Table(string& name, bool protect=false, bool extensible=false);

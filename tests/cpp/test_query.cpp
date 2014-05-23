@@ -47,7 +47,7 @@ TEST_F(QueryTest, SelectSqlScript) {
     db->add_many_to_one(t1, t2);
     Query q(db, t1_name);
     EXPECT_THROW(Query(db, "unknown"), std::out_of_range);
-    q.filter("t2.t2f1", "val", EQ);
+    q.filter("t2.t2f1", "val", Query::EQ);
     stringstream sql;
     EXPECT_TRUE(q.to_select_sql(sql));
     EXPECT_EQ(SELECT_SCRIPT, sql.str());
@@ -55,7 +55,7 @@ TEST_F(QueryTest, SelectSqlScript) {
 
 TEST_F(QueryTest, SelectSqlWithinTableScript) {
     Query q(db, t2_name);
-    q.filter("t2f1", "val", EQ);
+    q.filter("t2f1", "val", Query::EQ);
     stringstream sql;
     EXPECT_TRUE(q.to_select_sql(sql));
     EXPECT_EQ(SELECT_WITHIN_TABLE_SCRIPT, sql.str());
@@ -66,7 +66,7 @@ TEST_F(QueryTest, SelectAliasSqlScript) {
     EXPECT_EQ(1, t1->neightbor_tables.size());
     EXPECT_EQ(1, t2->neightbor_tables.size());
     Query q(db, t1_name);
-    q.filter("table2.t2f1", "val", EQ);
+    q.filter("table2.t2f1", "val", Query::EQ);
     stringstream sql;
     EXPECT_TRUE(q.to_select_sql(sql));
     EXPECT_EQ(SELECT_SCRIPT, sql.str());
@@ -92,7 +92,7 @@ TEST_F(QueryTest, Select3SqlScript) {
     EXPECT_EQ(db->tables.count(t1_name), 1);
     Query q(db, t3_name);
     EXPECT_EQ(3, t3.use_count());
-    q.filter("t2.t1.t1f1", "val", EQ);
+    q.filter("t2.t1.t1f1", "val", Query::EQ);
     stringstream sql;
     EXPECT_TRUE(q.to_select_sql(sql));
     EXPECT_EQ(SELECT_3_SCRIPT, sql.str());

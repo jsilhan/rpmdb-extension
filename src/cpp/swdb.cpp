@@ -53,7 +53,7 @@ Swdb::Swdb(string path, int type) :
     string pkg_name = "name";
     t_pkg->add_field(pkg_name, STRING);
     t_pkg->add_field("type", INT);
-    // swdb.create_index(string("pkgs"), string("name"), true) // FIXME
+    create_index(string("pkgs"), pkg_name, true);
 
     t_repo->add_field("name", STRING);
     t_repo->add_field("last_synced", INT);

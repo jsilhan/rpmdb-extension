@@ -52,8 +52,7 @@ struct cell {
     }
 };
 
-class Record {
-private:
+struct Record {
     sDb db;
     Table& from_table;
     bool changed;
@@ -68,9 +67,6 @@ private:
     bool self_to_insert_sql(stringstream& sql);
     bool to_update_sql(stringstream& sql);
     bool could_be_added(const string& key, field_flags type);
-    FRIEND_TEST(RecordTest, TestRecordGet);
-    FRIEND_TEST(RecordTest, InsertSqlScript);
-public:
     Record(sDb db, Table& t) :
         db(db), from_table(t), changed(false) {};
     Record(sDb db, string& tn) :

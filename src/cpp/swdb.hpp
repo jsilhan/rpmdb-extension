@@ -26,12 +26,10 @@ using std::move;
 using std::vector;
 
 
-class Swdb {
-private:
+struct Swdb {
     sDb db;
     vector<string> actors;
     pkg_type default_pkg_type;
-public:
     Swdb(string path="test.db", int type=RPM_PKG);
     bool init();
     uRecord urecord(string table_name);

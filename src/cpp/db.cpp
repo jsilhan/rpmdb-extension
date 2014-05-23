@@ -6,7 +6,7 @@
 #include <string>
 #include <assert.h>
 #include <string.h>
-#include <sqlite3.h> // TODO redesign - only in db
+#include <sqlite3.h>
 #include "db.hpp"
 
 using std::cout;

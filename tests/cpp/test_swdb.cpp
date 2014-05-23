@@ -18,7 +18,7 @@ TEST_F(SwdbTest, StoreRecords) {
     EXPECT_TRUE(pkg1->save());
 
     uQuery q = swdb.uquery("pkgs");
-    q->filter("name", "xxx.noarch", EQ);
+    q->filter("name", "xxx.noarch", Query::EQ);
 
     auto it = q->begin();
     Record record = *it;

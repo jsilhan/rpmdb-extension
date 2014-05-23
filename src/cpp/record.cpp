@@ -167,6 +167,7 @@ bool Record::self_to_insert_sql(stringstream& sql) {
 
 bool Record::save() {
     stringstream sql;
+    db->init();
     if (is_in_db()) {
         if (from_table.protect || !to_update_sql(sql))
             return false;
