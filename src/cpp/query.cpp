@@ -24,6 +24,19 @@ using std::vector;
 
 int comparator_mask = 0x0f;
 
+/**
+ * Sets condition of sought rows. When query is executed iterator will run
+ * through records that met all filter criteria. On query can be applied any
+ * number of filters.
+ * path - Optional table names, that are in relation, ending with required
+ *        column name. All the names are separated by dot.
+ * value - value that should match column (last item of the path)
+ * value flags - should be one of EQ (value equal), NEQ (not equal), GT
+ *               (greater), GTE (greater or equal), LT (less) or LTE (less
+ *               or equal) comparators and any of ICASE (match case
+ *               insensitive) and GLOB (match column against glob search
+ *               pattern)
+ */
 void Query::filter(const string& path, string value, int value_flags) {
     FieldFilter filter;
     assert(!path.empty());
@@ -33,6 +46,10 @@ void Query::filter(const string& path, string value, int value_flags) {
     filters.push_back(move(filter));
 }
 
+/**
+ * Appends select script with where clause for all values set by filter methods
+ * (part of select script)
+ */
 bool Query::add_where_clauses(FieldFilter& filter, stringstream& sql,
     string& last_table) {
 
@@ -49,6 +66,10 @@ bool Query::add_where_clauses(FieldFilter& filter, stringstream& sql,
     return true;
 }
 
+/**
+ * Appends select script with join clause for all tables in filter paths
+ * (part of select script)
+ */
 bool Query::add_join_clause(sTable& t, string& table_alias, string& last_field, stringstream& sql) {
     if (t->neightbor_tables.count(table_alias) == 0)
         return false;
@@ -74,6 +95,10 @@ bool Query::add_join_clause(sTable& t, string& table_alias, string& last_field, 
     return ret;
 }
 
+/**
+ * Appends select script with join clauses for all tables in filter paths
+ * (part of select script)
+ */
 bool Query::add_join_clauses(vector<string>& path, stringstream& sql, string& last_table_name) {
     sTable &first_table = relative_to;
     last_table_name = relative_to->name;
@@ -88,6 +113,10 @@ bool Query::add_join_clauses(vector<string>& path, stringstream& sql, string& la
     return true;
 }
 
+/**
+ * Appends select script with join clause for all tables in filter paths
+ * (part of select script)
+ */
 bool Query::add_select_clause(stringstream& sql) {
     sql << "SELECT ";
     sql << relative_to->name << ".*";
@@ -95,6 +124,9 @@ bool Query::add_select_clause(stringstream& sql) {
     return true;
 }
 
+/**
+ * Appends select script to 'sql' based on all filters applied
+ */
 bool Query::to_select_sql(stringstream& sql) {
     if (!add_select_clause(sql))
         return false;

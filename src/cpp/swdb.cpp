@@ -4,6 +4,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <memory>
 #include <assert.h>
 #include <string.h>
 #include <sqlite3.h>
@@ -20,13 +21,21 @@ using std::ofstream;
 using std::string;
 using std::stringstream;
 using std::unique_ptr;
+using std::make_shared;
 using std::move;
 using std::vector;
 
+/**
+ * Main handler to Swdb
+ * path - from where database should be opened or where should be
+ *        new database created
+ * type - Search or insert records only with the same package type. If zero
+ *        is set all queries will run against all kinds of packages (can be
+ *        explicitly filtered in query afterwards).
+ */
 Swdb::Swdb(string path, int type) :
     default_pkg_type((pkg_type) type) {
     db = make_shared<Db>(path);
-    // TODO actor params
     string pkg("pkgs");
     string repo("repos");
     string pkg_change("pkg_changes");
@@ -83,26 +92,54 @@ Swdb::Swdb(string path, int type) :
     db->add_many_to_one(t_trans_output, t_transaction);
 }
 
+/**
+ * Method that could be optionally called to ensure that database
+ * was initialized. This is called implicitly before any database
+ * operation.
+ */
 bool Swdb::init() {
     return db->init();
 }
 
+/**
+ * Returns new Record object, wrapped by unique pointer, that
+ * could be inserted to table named 'table_name' as a row after
+ * setting fields and firing record's save method.
+ */
 uRecord Swdb::urecord(string table_name) {
     return uRecord(new Record(db, table_name));
 }
 
+/**
+ * Returns new Record object that could be inserted to table named 'table_name'
+ * as a row after setting fields and firing record's save method.
+ */
 Record Swdb::record(string table_name) {
     return Record(db, table_name);
 }
 
+/**
+ * Returns new Query object, wrapped by unique pointer. Its results will be
+ * from 'table_name' table only.
+ */
 uQuery Swdb::uquery(string table_name) {
     return uQuery(new Query(db, table_name));
 }
 
+/**
+ * Returns new Query object. Its results will be from 'table_name' table only.
+ */
 Query Swdb::query(string table_name) {
     return Query(db, table_name);
 }
 
+/**
+ * creates index on frequently searched field that could have been created
+ * on demand.
+ * field name - column that should be indexed
+ * table name - table where the column is
+ * unique - create unique (true) / normal (false) index
+ */
 bool Swdb::create_index(const string& table_name, const string& field_name, bool unique) {
     stringstream sql;
     sql << "CREATE ";

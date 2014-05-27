@@ -26,6 +26,10 @@ using std::unordered_map;
 using std::map;
 using std::get;
 
+
+/**
+ * Returns true whether table name and type is allowed, false otherwise
+ */
 bool Table::is_new_field_valid(const string& name, field_flags type) {
     if (!is_valid_field_name(name))
         return false;
@@ -35,6 +39,9 @@ bool Table::is_new_field_valid(const string& name, field_flags type) {
     return true;
 }
 
+/**
+ * Returns true whether table name is allowed, false otherwise
+ */
 bool Table::is_valid_field_name(const string& name) {
     for (const char& c : name) {
         if (!isalnum(c))
@@ -43,10 +50,18 @@ bool Table::is_valid_field_name(const string& name) {
     return true;
 }
 
+/**
+ * Adds new field to the table. When required is set, value of the field
+ * cannot be NULL
+ */
 void Table::add_field(string table_name, field_flags flags, bool required) {
     fields_from_db[table_name] = flags;
 }
 
+/**
+ * Assigns index of column named 'key' to 'i' and return true,
+ * else returns false
+ */
 bool Table::get_cell_index(const string& key, unsigned long& i) {
     auto it = fields_from_db.find(key);
     if (it == fields_from_db.end())
@@ -58,8 +73,8 @@ bool Table::get_cell_index(const string& key, unsigned long& i) {
 }
 
 /**
- * Update table metadata (column name and type) from recent record
- * record can have more (by appending new columns)
+ * Update table metadata (column name and type) from recent record.
+ * Record can have more (by appending new columns)
  * or the same number of fields.
  * Note that added columns cannot be removed.
  */
@@ -81,6 +96,10 @@ Table::Table(string& name, bool protect, bool extensible) :
 Table::Table(const char* name, bool protect, bool extensible) :
     name(name), protect(protect), extensible(extensible) {}
 
+/**
+ * Translates table object into init script. 'Sql' value is appended
+ * with commands.
+ */
 bool Table::to_init_sql(stringstream& sql) {
     sql << "CREATE TABLE IF NOT EXISTS " << name << " (";
     sql << "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,";
@@ -100,16 +119,9 @@ bool Table::to_init_sql(stringstream& sql) {
     return true;
 }
 
-bool Table::with_neighbor_by_alias(const string& table_alias, function<void(Table&)> fnc) {
-    if (neightbor_tables.count(table_alias) == 0)
-        return false;
-    sTable rel_table = neightbor_tables[table_alias].lock();
-    if (rel_table == nullptr)
-        return false;
-    fnc(*rel_table);
-    return true;
-}
-
+/**
+ * Assigns to 'table_name' how 't' neighbor table references this table
+ */
 bool Table::table_ref_name(Table& t, string& table_name) {
     for (auto kv : t.neightbor_tables) {
         sTable st = kv.second.lock();

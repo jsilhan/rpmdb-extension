@@ -55,7 +55,6 @@ struct Table {
     Table(const char* name, bool protect=false, bool extensible=false);
     void add_field(string table_name, field_flags flags, bool required=false);
     bool table_ref_name(Table& t, string& table_name);
-    bool with_neighbor_by_alias(const string& table_alias, function<void(Table&)> fnc);
     bool is_new_field_valid(const string& name, field_flags type);
     bool is_field_in_db_or_extensible(const string& name);
     bool is_valid_field_name(const string& name);

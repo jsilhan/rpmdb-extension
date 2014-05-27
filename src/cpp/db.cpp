@@ -80,7 +80,6 @@ Db::~Db() {
 bool Db::execute(string sql, string context) {
     // init(); // FIXME
     char *err_msg = nullptr;
-    // cout << "$ " << context << "> " << sql << "\n";
     int rc = sqlite3_exec(sql_db, sql.c_str(), NULL, 0, &err_msg);
     if (rc == SQLITE_OK)
         return true;

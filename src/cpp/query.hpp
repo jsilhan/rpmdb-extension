@@ -33,8 +33,7 @@ struct FieldFilter {
     int value_flags;
 };
 
-class Query {
-public:
+struct Query {
     enum comparator_flags {
         EQ = 0,
         NEQ = 1,
@@ -111,7 +110,6 @@ public:
         Record operator*() {
             return Record(db, table, statement);
         }
-        // Record operator->() { return Record(db, table, statement); }
         bool operator==(const self_type& rhs) {
             return res == rhs.res;
         }

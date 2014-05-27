@@ -1,22 +1,7 @@
-#include <iostream>
-#include <fstream>
 #include <sstream>
-#include <functional>
-#include <vector>
-#include <string>
-#include <assert.h>
-#include <string.h>
 #include "utils.hpp"
 
-using std::cout;
-using std::cerr;
-using std::function;
-using std::ofstream;
-using std::string;
 using std::stringstream;
-using std::unique_ptr;
-using std::move;
-using std::vector;
 
 void split(const string& s, char delim, vector<string>& elems) {
     stringstream ss(s);

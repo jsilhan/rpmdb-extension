@@ -23,14 +23,26 @@ using std::vector;
 using std::to_string;
 using std::stoi;
 
+
+/**
+ * Returns true if the record is already in database else returns false.
+ */
 bool Record::is_in_db() {
     return !values_from_db.empty();
 };
 
+/**
+ * Returns false whether object is stored in database with
+ * the same values as it holds now, otherwise returns true.
+ */
 bool Record::is_changed() {
     return changed;
 };
 
+/**
+ * Returns true and add new field whether table name is allowed,
+ * false otherwise.
+ */
 bool Record::could_be_added(const string& name, field_flags type) {
     if (!from_table.is_new_field_valid(name, type))
         return false;
@@ -42,6 +54,13 @@ bool Record::could_be_added(const string& name, field_flags type) {
     return true;
 }
 
+/**
+ * Sets new key with value or updates value for given key.
+ * Return false in case column type is unlike given value type, key contains
+ * non-alphanumeric character or ‘ id’, record is trying to be updated in
+ * protected table or database connection error occurred.
+ * Note: New fields are not pushed into database
+ */
 bool Record::set(const string& key, const string& value) {
     if (!could_be_added(key, STRING))
         return false;
@@ -49,6 +68,13 @@ bool Record::set(const string& key, const string& value) {
     return true;
 };
 
+/**
+ * Sets new key with value or updates value for given key.
+ * Returns false in case column type is unlike given value type, key contains
+ * non-alphanumeric character or ‘ id’, record is trying to be updated in
+ * protected table or database connection error occurred.
+ * Note: New fields are not pushed into database
+ */
 bool Record::set(const string& key, int value) {
     if (!could_be_added(key, INT))
         return false;
@@ -56,6 +82,14 @@ bool Record::set(const string& key, int value) {
     return true;
 };
 
+/**
+ * Insert records from vector into neighbor table having many-to-one relation
+ * to origin record table. Erase all existing connected rows in foreign tables.
+ * Returns false in case column type is unlike given value type, key contains
+ * non-alphanumeric character or ‘ id’, record is trying to be updated in
+ * protected table or database connection error occurred.
+ * Note: New fields are not pushed into database
+ */
 bool Record::set(const string& key, vector<Record> records) {
     if (!from_table.is_new_field_valid(key, INT))
         return false;
@@ -64,12 +98,18 @@ bool Record::set(const string& key, vector<Record> records) {
     if (from_table.neightbor_tables.count(key) == 0)
         return false;
     // TODO check if neighbor and valid cardinality
-    // if (records_to_insert.count(key) > 0)
-    //     delete records_to_insert[key].release();
     records_to_insert[key] = move(records);
     return true;
 };
 
+/**
+ * Appends record from vector into neighbor table having many-to-one relation
+ * to origin record table.
+ * Returns false in case column type is unlike given value type, key contains
+ * non-alphanumeric character or ‘ id’, record is trying to be updated in
+ * protected table or database connection error occurred.
+ * Note: New fields are not pushed into database
+ */
 bool Record::append(const string& key, Record record) {
     if (!from_table.is_new_field_valid(key, INT))
         return false;
@@ -78,6 +118,10 @@ bool Record::append(const string& key, Record record) {
     return true;
 };
 
+/**
+ * Returns false if column in table does not exist or database error happen.
+ * Otherwise return true and assign attribute of the record to value.
+ */
 bool Record::get(const string& key, int& value) {
     unsigned long i;
     if (!from_table.get_cell_index(key, i))
@@ -91,6 +135,10 @@ bool Record::get(const string& key, int& value) {
     return true;
 };
 
+/**
+ * Returns false if column in table does not exist or database error happen.
+ * Otherwise return true and assign attribute of the record to value.
+ */
 bool Record::get(const string& key, string& value) {
     unsigned long i;
     if (!from_table.get_cell_index(key, i))
@@ -101,6 +149,9 @@ bool Record::get(const string& key, string& value) {
     return true;
 };
 
+/**
+ * Appends update script to 'sql' for all changed values
+ */
 bool Record::to_update_sql(stringstream& sql) {
     if (values_to_insert.empty())
         return false;
@@ -117,25 +168,35 @@ bool Record::to_update_sql(stringstream& sql) {
     return true;
 }
 
+/**
+ * Appends into 'sql' insert scripts of all other records 
+ * within this record
+ */
 bool Record::others_to_insert_sql(stringstream& sql) {
     for (auto& kv : records_to_insert) {
         vector<Record>& records = kv.second;
         for (Record& r : records) {
             if (r.is_in_db())
                 return false;
-            // if (!r->set_fk(this) || !r->to_insert_sql(sql))
-            //     return false;
         }
     }
     return true;
 }
 
+/**
+ * Helper method that concatenates insert scripts of this record
+ * and all records inside it.
+ */
 bool Record::to_insert_sql(stringstream& sql) {
     if (self_to_insert_sql(sql) && others_to_insert_sql(sql))
         return true;
     return false;
 }
 
+/**
+ * Appends into 'sql' all modified column names in brackets
+ * (part of insert script)
+ */
 void Record::insert_columns(stringstream& sql) {
     sql << "(";
     for (auto i = values_to_insert.begin(); i != values_to_insert.end(); i++) {
@@ -146,6 +207,10 @@ void Record::insert_columns(stringstream& sql) {
     sql << ") ";
 }
 
+/**
+ * Appends into 'sql' all modified values in brackets
+ * (part of insert script)
+ */
 void Record::insert_values(stringstream& sql) {
     sql << "VALUES (";
     for (auto i = values_to_insert.begin(); i != values_to_insert.end(); i++) {
@@ -156,6 +221,9 @@ void Record::insert_values(stringstream& sql) {
     sql << ");";
 }
 
+/**
+ * Appends into 'sql' insert script of this record
+ */
 bool Record::self_to_insert_sql(stringstream& sql) {
     if (values_to_insert.empty())
         return false;
@@ -165,6 +233,12 @@ bool Record::self_to_insert_sql(stringstream& sql) {
     return true;
 }
 
+/**
+ * Returns false when database error occur or commits all field set or appended
+ * to database and returns true. Each appended record will implicitly
+ * call recursively save method itself. For every unknown key new column will
+ * be added to the table.
+ */
 bool Record::save() {
     stringstream sql;
     db->init();

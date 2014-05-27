@@ -3,6 +3,7 @@
 import unittest
 import swdb
 
+
 class SubjectRealPossibilitiesTest(unittest.TestCase):
     def setUp(self):
         pass
