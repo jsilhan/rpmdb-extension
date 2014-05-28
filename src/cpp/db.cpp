@@ -21,6 +21,11 @@ using std::move;
 using std::vector;
 
 
+/**
+ * Method that could be optionally called to ensure that database
+ * was initialized. This is called implicitly before any database
+ * operation.
+ */
 bool Db::init() {
     if (initialized)
         return true;
@@ -33,6 +38,12 @@ bool Db::init() {
     return ret;
 }
 
+/**
+ * Sets many to one relation for tables 't1' and 't2'.
+ * forward_edge - the name of field that references 't2' in 't1' table
+ * back_edge - the name of field that references 't1' in 't2' table
+ * required - field shouldn't be empty
+ */
 void Db::add_many_to_one(sTable& t1, sTable& t2,
     string forward_edge, string back_edge, bool required) {
     // TODO handle required
@@ -41,15 +52,30 @@ void Db::add_many_to_one(sTable& t1, sTable& t2,
     t2->neightbor_tables[back_edge] = t1;    
 }
 
+/**
+ * Sets many to one relation for tables 't1' and 't2'.
+ * forward_edge - the name of field that references 't2' in 't1' table
+ * t2 references t1 the same name as t1.name
+ * required - field shouldn't be empty
+ */
 void Db::add_many_to_one(sTable& t1, sTable& t2,
     string forward_edge, bool required) {
     add_many_to_one(t1, t2, forward_edge, t1->name, required);
 }
 
+/**
+ * Sets many to one relation for tables 't1' and 't2'.
+ * t1 references t2 the same name as t2.name and vice versa
+ * required - field shouldn't be empty
+ */
 void Db::add_many_to_one(sTable& t1, sTable& t2, bool required) {
     add_many_to_one(t1, t2, t2->name, t1->name, required);
 }
 
+
+/**
+ * Initiates query from 'sql' select script
+ */
 bool Db::prepare_select(stringstream& sql, sqlite3_stmt** statement) {
     init();
     int rc = sqlite3_prepare(sql_db, sql.str().c_str(), -1, statement, 0);
@@ -59,6 +85,9 @@ bool Db::prepare_select(stringstream& sql, sqlite3_stmt** statement) {
     return false;
 }
 
+/**
+ * Initiates all tables that were set
+ */
 bool Db::init_tables() {
     stringstream sql;
     for (auto& kv : tables) {
@@ -77,6 +106,11 @@ Db::~Db() {
         sqlite3_close(sql_db);
 }
 
+/**
+ * Executes any script in sqlite3
+ * sql - command
+ * context - alias for the command that will be printed in case of error
+ */
 bool Db::execute(string sql, string context) {
     // init(); // FIXME
     char *err_msg = nullptr;
@@ -89,6 +123,9 @@ bool Db::execute(string sql, string context) {
     return false;
 }
 
+/**
+ * Adds column named 'column' to the table 't'
+ */
 bool Db::add_column(Table& t, const string& column, field_flags flags) {
     stringstream sql;
     sql << "ALTER TABLE " << t.name << " ADD COLUMN " << column;

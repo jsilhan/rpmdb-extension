@@ -1,0 +1,15 @@
+Dependencies of Swdb library are:
+sqlite-devel
+boost-python
+boost-devel
+gtest-devel
+
+Building from source:
+mkdir build;
+cd build;
+cmake .. && make;
+
+For executing tests run:
+make test
+
+Snippets of Swdb's usage can be seen in tests/cpp/test_*.cpp and tests/python/test_*.py test files.
