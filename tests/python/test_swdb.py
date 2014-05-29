@@ -17,4 +17,8 @@ class SubjectRealPossibilitiesTest(unittest.TestCase):
 
         q = s.query("pkgs")
         q.filter("name", "n:e-v-r.a", swdb.flags.EQ);
-        self.assertEqual(3, q[0]["type"])
+        first = q[0]
+        self.assertTrue(isinstance(first, swdb.Record))
+        self.assertRaises(AttributeError, first.__getitem__, "bla")
+        self.assertEqual(3, first["type"])
+        self.assertEqual("n:e-v-r.a", first["name"])

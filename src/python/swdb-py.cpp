@@ -8,7 +8,11 @@ using namespace boost::python;
 
 
 void translator(std::out_of_range const& x) {
-    PyErr_SetString(PyExc_IndexError, "Rows out of range");
+    PyErr_SetString(PyExc_IndexError, x.what());
+}
+
+void translator2(std::invalid_argument const& x) {
+    PyErr_SetString(PyExc_AttributeError, x.what());
 }
 
 struct PyRecord : public Record {
@@ -16,14 +20,13 @@ struct PyRecord : public Record {
     object getitem(string key) {
         unsigned long i;
         object value;
-        if (!from_table.get_cell_index(key, i))
-            return value;
-        if (i >= values_from_db.size())
-            return value;
+        if (!from_table.get_cell_index(key, i)) {
+            throw std::invalid_argument("Column does not exist");
+        }
         cell& r = values_from_db[i];
         if (r.type == INT)
             value = long_(r.number);
-        else if (r.type == INT)
+        else if (r.type == STRING)
             value = str(r.text);
         return value;
     }
@@ -58,6 +61,7 @@ struct PySwdb : public Swdb {
 BOOST_PYTHON_MODULE(swdb)
 {
     register_exception_translator<std::out_of_range>(translator);
+    register_exception_translator<std::invalid_argument>(translator2);
 
     bool (PyRecord::*set_int)(const string&, int) = &Record::set;
     bool (PyRecord::*set_str)(const string&, const string&) = &Record::set;

@@ -126,8 +126,7 @@ bool Record::get(const string& key, int& value) {
     unsigned long i;
     if (!from_table.get_cell_index(key, i))
         return false;
-    if (i >= values_from_db.size())
-        return false;
+    assert(i < values_from_db.size());
     cell& r = values_from_db[i];
     if (r.type != INT)
         return false;
@@ -143,9 +142,11 @@ bool Record::get(const string& key, string& value) {
     unsigned long i;
     if (!from_table.get_cell_index(key, i))
         return false;
-    if (values_from_db[i].type != STRING)
+    assert(i < values_from_db.size());
+    cell& r = values_from_db[i];
+    if (r.type != STRING)
         return false;
-    value = values_from_db[i].text;
+    value = r.text;
     return true;
 };
 
