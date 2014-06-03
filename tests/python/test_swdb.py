@@ -12,7 +12,7 @@ class SubjectRealPossibilitiesTest(unittest.TestCase):
         s = swdb.Swdb("location.db", 3)
         rec = s.record("pkgs")
         self.assertTrue(rec.set("type", 3))
-        self.assertTrue(rec.set("name", "n:e-v-r.a"))
+        rec["name"] = "n:e-v-r.a";
         self.assertTrue(rec.save())
 
         q = s.query("pkgs")

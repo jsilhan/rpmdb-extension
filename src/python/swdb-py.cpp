@@ -15,6 +15,13 @@ void translator2(std::invalid_argument const& x) {
     PyErr_SetString(PyExc_AttributeError, x.what());
 }
 
+#define SET_IF_VALID(value) \
+    if (value.check()) { \
+        if (!set(key, value())) \
+            throw std::invalid_argument("Not valid key"); \
+        return object(); \
+    }
+
 struct PyRecord : public Record {
     using Record::Record;
     object getitem(string key) {
@@ -29,6 +36,23 @@ struct PyRecord : public Record {
         else if (r.type == STRING)
             value = str(r.text);
         return value;
+    }
+
+    object setitem(string key, object value) {
+        {
+            extract<int> extracted(value);
+            SET_IF_VALID(extracted);
+        }
+        {
+            extract<string> extracted(value);
+            SET_IF_VALID(extracted);
+        }
+        {
+            extract<vector<Record>> extracted(value);
+            SET_IF_VALID(extracted);
+        }
+        throw std::invalid_argument(
+            "can set only int, string or list of Records as a value");
     }
 
     PyRecord(Record&& record) : Record(record.db, record.from_table) {
@@ -77,6 +101,7 @@ BOOST_PYTHON_MODULE(swdb)
         .def("append", &PyRecord::append)
         .def("save", &PyRecord::save)
         .def("__getitem__", &PyRecord::getitem)
+        .def("__setitem__", &PyRecord::setitem)
     ;
 
     enum_<Query::comparator_flags>("flags")
