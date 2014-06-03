@@ -66,8 +66,6 @@ BOOST_PYTHON_MODULE(swdb)
     bool (PyRecord::*set_int)(const string&, int) = &Record::set;
     bool (PyRecord::*set_str)(const string&, const string&) = &Record::set;
     bool (PyRecord::*set_record)(const string&, vector<Record>) = &Record::set;
-    bool (PyRecord::*get_int)(const string&, int&) = &Record::get;
-    bool (PyRecord::*get_str)(const string&, string&) = &Record::get;
 
     class_<PyRecord>("Record", no_init)
         .def("is_changed", &PyRecord::is_changed)
@@ -76,8 +74,6 @@ BOOST_PYTHON_MODULE(swdb)
         .def("set", set_int)
         .def("set", set_str)
         .def("set", set_record)
-        .def("get", get_int)
-        .def("get", get_str)
         .def("append", &PyRecord::append)
         .def("save", &PyRecord::save)
         .def("__getitem__", &PyRecord::getitem)
